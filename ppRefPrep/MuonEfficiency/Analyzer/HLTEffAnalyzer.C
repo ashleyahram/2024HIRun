@@ -403,7 +403,6 @@ double invMass(Object obj1, Object obj2)
 // echo 'gROOT->LoadMacro("HLTEffAnalyzer.C+"); gSystem->Exit(0);' | root -b -l
 // root -l -b -q 'HLTEffAnalyzer.C("v00", "TEST")' >&log&
 
-
 void HLTEffAnalyzer(
     TString ver = "v00", TString tag = "TEST",
     vector<TString> vec_Dataset = {}, TString JobId = "",
@@ -428,13 +427,13 @@ void HLTEffAnalyzer(
       // paths = { "/eos/cms/store/group/phys_heavyions/soohwan/Run3_2023/./PostRunHLT/TriggerStudy_Run375754_DetailedForMu_PbPb2023_CMSSW_13_2_6_patch2_soohwan_09Nov2023_v1/ntuple.root" }; // 700k events
       // paths = { "/eos/cms/store/group/phys_heavyions/soohwan/Run3_2023/PostRunHLT/MuonHLTRunBefore_21Nov2023_v4.root" }; // Before fix 700k events
       // paths = { "/eos/cms/store/group/phys_heavyions/soohwan/Run3_2023/PostRunHLT/MuonHLTRunAfter_20Nov2023_v4.root" }; // After fix 1.4M events
-      paths = { "./ppRefJPsiNtuple.root" };
+      paths = { "./ppRefMCJPsiNtuple.root" };
     }
 
     // -- Output
     TString fileName = TString::Format( "hist-%s-%s", ver.Data(), tag.Data() );
     if(JobId != "")  fileName = fileName + TString::Format("--%s", JobId.Data());
-    TFile *f_output = TFile::Open(outputDir+fileName+"-Eff_before.root", "RECREATE");
+    TFile *f_output = TFile::Open(outputDir+fileName+"-Eff_ppRefMCJPsi.root", "RECREATE");
     // TFile *f_output = TFile::Open(outputDir+fileName+"-Eff_after.root", "RECREATE");
 
     // -- Event chain
@@ -543,131 +542,105 @@ void HLTEffAnalyzer(
         "hltPixelTracksInRegionL1",
         "hltOI",
 
-
-        // "IterL1sSingleMu3",
-        // "IterL1sSingleMu5",
-        // "IterL1sSingleMu7",
-        // "IterL1sSingleMuOpen0",
-        // "L1sSingleMu3",
-
-        // "L1sSingleMuOpen3",
-        // "myL1sSingleMuOpen3",
-
-        // "HIL2SingleMu3",
-        // "HIL3SingleMu12",
-        // "HIL2DoubleMu0_M1p5to6_Open",
-        // "HIL3DoubleMu0_Quarkonia_Open",
-        // "HIL3SingleMu3_Open",
-        // "HIL2DoubleMu0_M7to15_Open",
-        // "HIUPC_SingleMuOpen",
-        // "HIUPC_ZDC1nAsymXOR",
-        // "HIUPC_SingleMuCosmic",
-        // "RPCMuonNormalisationForHI"
-
         // ***************************************
-        "IterL1sSingleMu3",
-        "IterL1sSingleMu5",
-        "IterL1sSingleMu7",
+        "myHIRPCMuon",
 
-        "IterL1sSingleMuOpen0",
-        "L1sSingleMu3",
-        "L1sSingleMuOpen0",
+        "myIterL1sDoubleMu0",
+        "myIterL1sSingleMu7",
+
+        "myL1sDoubleMu0",
+        "myL1sDoubleMu12",
+        "myL1sSingleMu0",
+        "myL1sSingleMu7",
+
+        "myL1sAlCaHIEcal",
         
-        "L1sSingleMu3Jet32",
-        "L1sSingleMu3Jet40",
+        "myDoubleMu0",
+        "myDoubleMuOpen",
 
-        "L1sSingleMuOpenL10",
+        "mySingleEGorSingleorDoubleMu",
+        "mySingleJet24",
 
-        "L1sSingleMuOpen3",
-        "myL1sSingleMuOpen3",
+        "mySingleMu0Cosmics",
+        "mySingleMu12",
+        "mySingleMu3",
+        "mySingleMu5",
+        "mySingleMu7 ",
+        "mySingleMu7to30",
+        "mySingleMuOpen",
 
-        // ***************************************
-        // "HIL3SingleMu12",
-        // "HIL2DoubleMu0_M1p5to6_Open",
-        // "HIL3DoubleMu0_Quarkonia_Open",
-        // "HIL3SingleMu3_Open",
-        // "HIL2DoubleMu0_M7to15_Open"
+        "myL1sDoubleMu0L2",
+        "myL1sSingleMu12L2",
+        "myL1sSingleMu7L2",
+        "myL1sSingleMu0L3",
+        "myL1sSingleMu12L3",
 
-        // "L1sSingleMu22",
-        // "Mu24",
-        // "Mu50",
-        // "Mu50OrOldMu100OrTkMu100",
-        // "Mu50L1Shower",
-        // "Mu50OrL1Shower",
-        // "Mu50OrL1ShowerOrOldMu100OrTkMu100",
-        // "ECALIsoMu24",
-        // "HCALIsoMu24",
-        // "IsoMu24",
-
-        // "myL1sSingleMu22",
-        // "myMu24",
-        // "myMu50",
-        // "myMu50OrOldMu100OrTkMu100",
-        // "myECALIsoMu24",
-        // "myHCALIsoMu24",
-        // "myIsoMu24",
+        "myCaloFwdJet1",
+        "myCaloJet10"            
     };
 
     vector<TString> HLTpaths = {
-        "HIL2SingleMu3",
-        "HIL3SingleMu12",
-        "HIL2DoubleMu0_M1p5to6_Open",
-        "HIL3DoubleMu0_Quarkonia_Open",
-        "HIL3SingleMu3_Open",
-        "HIL2DoubleMu0_M7to15_Open",
-        "HIUPC_SingleMuOpen",
-        "HIUPC_ZDC1nAsymXOR",
-        "HIUPC_SingleMuCosmic",
-        "RPCMuonNormalisationForHI"
+        "AlCa_EcalPhiSym",
+        "AlCa_LumiPixelsCounts_Random",
+        "HLT_EcalCalibration",
+        "HLT_HcalCalibration",
+        "HLT_HcalNZS",
+        "HLT_HcalPhiSym",
+        "HLT_PPRefZeroBias",
+        "HLT_PPRefL1DoubleMu0",
+        "HLT_PPRefL1SingleMu0_Cosmics",
+        "HLT_PPRefL2DoubleMu0",
+        "HLT_PPRefL3DoubleMu0",
+        "Dataset_AlCaLumiPixelsCountsExpress",
+        "Dataset_AlCaLumiPixelsCountsPrompt",
+        "Dataset_AlCaPhiSym",
+        "Dataset_EcalLaser",
+        "Dataset_HcalNZS",
+        "Dataset_PPRefZeroBias"
+        "Dataset_PPRefDoubleMuon",
+        "Dataset_PPRefSingleMuon"
+        "Dataset_PPRefZeroBias",
+        "Dataset_TestEnablesEcalHcal",
+        "Dataset_TestEnablesEcalHcalDQM"
 
-        /*"Mu24",
-        "Mu50",
-        "OldMu100",
-        "TkMu100",
-        "Mu50OrOldMu100OrTkMu100",
-        "Mu50OrL1Shower",
-        "Mu50OrL1ShowerOrOldMu100OrTkMu100",
-        "ECALIsoMu24",
-        "HCALIsoMu24",
-        "IsoMu24",
-        "Mu17Mu8",
-        "Mu37TkMu27"*/
+        // {{{ 
+        // filter names / HLTPath
+        // hltHIRPCMuonNormaL1Filtered / AlCa_HIRPCMuonNormalisation 
+
+        // hltL1fForIterL3L1fL1sDoubleMu0L1Filtered0PPRef / HLT_PPRefL3DoubleMu0
+        // hltL1fForIterL3L1fL1sSingleMu7L1Filtered7PPRef / HLT_PPRefL3SingMu12, HLT_PPRefL3SingMu15, HLT_PPRefL3SingMu20, HLT_PPRefL3SingMu7
+
+        // hltL1fL1sDoubleMu0L1Filtered0PPRef / HLT_PPRefL1DoubleMu0, HLT_PPRefL2DoubleMu0, HLT_PPRefL3DoubleMu0
+        // hltL1fL1sDoubleMu12L1Filtered12PPRef / HLT_PPRefL1SingleMu12
+        // hltL1fL1sSingleMu0CosmicsL1Filtered0PPRef / HLT_PPRefL1SingleMu0_Cosmics
+        // hltL1fL1sSingleMu7L1Filtered7PPRef / HLT_PPRefL1SingleMu7, HLT_PPRefL2SingleMu12, HLT_PPRefL2SingleMu15, HLT_PPRefL2SingleMu20, HLT_PPRefL2SingleMu7, HLT_PPRefL3SingleMu12, HLT_PPRefL3SingleMu15, HLT_PPRefL3SingleMu20, HLT_PPRefL3SingleMu7
+
+        // hltL1sAlCaHIEcalPi0Eta / AlCa_HIEcalEtaEBonly, AlCa_HIEcalEtaEEonly, AlCa_HIEcalPi0EBonly, AlCa_HIEcalPi0EEonly
+
+        // hltL1sDoubleMu0 / HLT_PPRefL1DoubleMu0, HLT_PPRefL2DoubleMu0, HLT_PPRefL3DoubleMu0
+        // hltL1sDoubleMuOpen / HLT_PPRefL1DoubleMu0_Open, HLT_PPRefL2DoubleMu0_Open, HLT_PPRefL3DoubleMu0_Open
+
+        // hltL1sSingleEGorSingleorDoubleMu / HLT_HcalPhiSym
+        // hltL1sSingleJet24 / HLT_PPRefDmesonTrackingGlobal_Dpt25
+
+        // hltL1sSingleMu0Cosmics / HLT_PPRefL1SingleMu0_Cosmics
+        // hltL1sSingleMu12 / HLT_PPRefL1SingleMu12
+        // hltL1sSingleMu3 / HLT_PPRefL3SingleMu3
+        // hltL1sSingleMu5 / HLT_PPRefL3SingleMu5
+        // hltL1sSingleMu7 / AlCa_HIRPCMuonNormalisation, HLT_PPRefL1SingleMu7, HLT_PPRefL2SingleMu12, HLT_PPRefL2SingleMu15, HLT_PPRefL2SingleMu20, HLT_PPRefL2SingleMu7, HLT_PPRefL3SingleMu12, HLT_PPRefL3SingleMu15, HLT_PPRefL3SingleMu20, HLT_PPRefL3SingleMu7
+        // hltL1sSingleMu7to30 / AlCa_HIRPCMuonNormalisation
+        // hltL1sSingleMuOpen / HLT_PPRefL2SingleMu20
+
+        // hltL2fL1fL1sDoubleMu0L2Filtered0PPRef / HLT_PPRefL2DoubleMu0, HLT_PPRefL3DoubleMu0
+        // hltL2fL1fL1sSingleMu7L2Filtered12PPRef / HLT_PPRefL2SingleMu12
+        // hltL2fL1fL1sSingleMu7L2Filtered7PPRef / HLT_PPRefL2SingMu7, HLT_PPRefL3SingMu12, HLT_PPRefL3SingMu15, HLT_PPRefL3SingMu20, HLT_PPRefL3SingMu7
+        // hltL3fL1fL1sDoubleMu0L3Filtered0PPRef / HLT_PPRefL3DoubleMu0
+        // hltL3fL1fL1sSingleMu7L3Filtered12PPRef / HLT_PPRefL3SingleMu12
+
+        // hltSingleCaloFwdJet10 / HLT_AK4CaloJetFwd100, HLT_AK4PFJetFwd40
+        // hltSingleCaloJet10 / HLT_AK4PFJet40 
+        // }}}
     };
-
-    //HLT_HIL2SingleMu3_Open_v3
-    //HLT_HIL3SingleMu3_Open_v3
-    //HLT_HIL3SingleMu3_SinglePuAK4CaloJet40_v3
-    //AlCa_RPCMuonNormalisationForHI_v6
-    //HLT_HIUPC_SingleMuCosmic_NotMBHF2AND_v6
-    //HLT_HIUPC_SingleMuCosmic_NotMBHF2AND_MaxPixelCluster1000_v2
-    //HLT_HIUPC_SingleMuCosmic_NotMBHF2OR_v6
-    //HLT_HIUPC_SingleMuCosmic_NotMBHF2OR_MaxPixelCluster1000_v2
-    //HLT_HIUPC_SingleMuOpen_BptxAND_MaxPixelCluster1000_v2
-    //HLT_HIUPC_SingleMuOpen_NotMBHF2AND_v8
-    //HLT_HIUPC_SingleMuOpen_NotMBHF2AND_MaxPixelCluster1000_v2
-    //HLT_HIUPC_SingleMuOpen_NotMBHF2OR_v8
-    //HLT_HIUPC_SingleMuOpen_NotMBHF2OR_MaxPixelCluster1000_v2
-    //HLT_HIUPC_SingleMuOpen_OR_SingleMuCosmic_EMTF_NotMBHF2AND_v6
-    //HLT_HIUPC_SingleMuOpen_OR_SingleMuCosmic_EMTF_NotMBHF2AND_MaxPixelCluster1000_v2
-    //HLT_HIUPC_SingleMuOpen_OR_SingleMuCosmic_EMTF_NotMBHF2OR_v6
-    //HLT_HIUPC_SingleMuOpen_OR_SingleMuCosmic_EMTF_NotMBHF2OR_MaxPixelCluster1000_v2
-    //HLT_HIUPC_ZDC1nAsymXOR_MBHF1AND_PixelTrackMultiplicity20_v1
-
-     // process.HLTriggerFirstPath,
-     // process.HLT_HIL3SingleMu12_v3,
-     // process.HLT_HIL2DoubleMu0_M1p5to6_Open_v3,
-     // process.HLT_HIL3DoubleMu0_Quarkonia_Open_v3,
-     // process.HLT_HIL3SingleMu3_Open_v3,
-     // process.HLT_HIL2DoubleMu0_M7to15_Open_v3,
-     
-     // #process.HLT_IsoMu24_v17,
-     // #process.HLT_Mu50_v17,
-     // #process.HLT_CascadeMu100_v7,
-     // #process.HLT_HighPtTkMu100_v6,
-     // #process.HLT_Mu15_v7,
-     // #process.HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v9,
-     // process.HLTriggerFinalPath,
-
 
     // -- Efficiency
     vector<double> Eff_genpt_mins = {
@@ -943,74 +916,42 @@ void HLTEffAnalyzer(
         vector<Object> hltPixelTracksInRegionL1Associated = nt->get_hltPixelTracksInRegionL1Associated();
         vector<Object> hltIterL3OIMuonTrackAssociated = nt->get_hltIterL3OIMuonTrackAssociated();
         
-        // filter names
-        // hltL1fForIterL3L1fL1sSingleMu3L1Filtered0
-        // hltL1fForIterL3L1fL1sSingleMuOpenL1Filtered0
-        // hltL1fL1sSingleMuOpenL1Filtered0
-        // hltL1fL1sSingleMu3SingleJet32MuFiltered0
-        // hltL1fL1sSingleMu3SingleJet40MuFiltered0
-        // hltL1fL1sSingleMuOpenL1Filtered0
-
-        // hltL1fL1sSingleMuOpenSingleJet28MuFiltered0
-        // hltL1fL1sSingleMuOpenSingleJet44MuFiltered0
-        // hltL1fL1sSingleMuOpenSingleJet64MuFiltered0
-        // hltL1sSingleMu0BptxAND
-        // hltL1sSingleMuOpenBptxAND
-        // hltL1sSingleMu3BptxAND
-        // hltL1sSingleMu3SingleJet32MidEta2p7BptxAND
-        // hltL1sSingleMuOpenBptxAND
-        // hltL1sSingleMuOpenSingleJet28MidEta2p7BptxAND
-        // hltL2fL1fL1sSingleMuOpenL2Filtered0
-        // hltL2fL1fL1sSingleMu3L2Filtered3
-        // hltL2fL1fL1sSingleMuOpenL2Filtered0
-        // hltL2fL1fL1sSingleMuOpenL2Filtered3
-
-        // hltL1fForIterL3L1fL1sDoubleMuOpenL1Filtered0
-        // hltL1fL1sDoubleMuOpenMaxDr3p5L1Filtered0
-        // hltL1fL1sSingleMuOpenL1Filtered0
-        // hltL1sDoubleMuOpenMaxDr3p5BptxAND
-        // hltL1sSingleMuOpenBptxAND
-        // hltL2fL1fL1sSingleMuOpenL2Filtered0
-        // hltL3fL1fL1sSingleMuOpenL3Filtered3
-        // hltL2fL1fL1sDoubleMuOpenL2Filtered0
-
         // ***************************************
-        vector<Object> IterL1sSingleMu3_HLT = nt->get_HLTObjects("hltL1fForIterL3L1fL1sSingleMu3L1Filtered0");
-        vector<Object> IterL1sSingleMu5_HLT = nt->get_HLTObjects("hltL1fForIterL3L1fL1sSingleMu5L1Filtered0");
-        vector<Object> IterL1sSingleMu7_HLT = nt->get_HLTObjects("hltL1fForIterL3L1fL1sSingleMu7L1Filtered0");
-
-        vector<Object> IterL1sSingleMuOpen0_HLT = nt->get_HLTObjects("hltL1fForIterL3L1fL1sSingleMuOpenL1Filtered0");
-        vector<Object> L1sSingleMu3_HLT = nt->get_HLTObjects("hltL1fL1sSingleMu3L1Filtered0");
-        vector<Object> L1sSingleMuOpen0_HLT = nt->get_HLTObjects("hltL1fL1sSingleMuOpenL1Filtered0");
+        vector<Object> HIRPCMuon_MYHLT = nt->get_myHLTObjects("hltHIRPCMuonNormaL1Filtered");
         
-        vector<Object> L1sSingleMu3Jet32_HLT = nt->get_HLTObjects("hltL1fL1sSingleMu3SingleJet32MuFiltered0");
-        vector<Object> L1sSingleMu3Jet40_HLT = nt->get_HLTObjects("hltL1fL1sSingleMu3SingleJet40MuFiltered0");
+        vector<Object> IterL1sDoubleMu0_MYHLT = nt->get_myHLTObjects("hltL1fForIterL3L1fL1sDoubleMu0L1Filtered0PPRef");
+        vector<Object> IterL1sSingleMu7_MYHLT = nt->get_myHLTObjects("hltL1fForIterL3L1fL1sSingleMu7L1Filtered7PPRef");
+        
+        vector<Object> L1sDoubleMu0_MYHLT = nt->get_myHLTObjects("hltL1fL1sDoubleMu0L1Filtered0PPRef");
+        vector<Object> L1sDoubleMu12_MYHLT = nt->get_myHLTObjects("hltL1fL1sDoubleMu12L1Filtered12PPRef");
+        vector<Object> L1sSingleMu0_MYHLT = nt->get_myHLTObjects("hltL1fL1sSingleMu0CosmicsL1Filtered0PPRef");
+        vector<Object> L1sSingleMu7_MYHLT = nt->get_myHLTObjects("hltL1fL1sSingleMu7L1Filtered7PPRef");
 
-        vector<Object> L1sSingleMuOpenL10_HLT = nt->get_HLTObjects("hltL1fL1sSingleMuOpenL1Filtered0");
+        vector<Object> L1sAlCaHIEcal_MYHLT = nt->get_myHLTObjects("hltL1sAlCaHIEcalPi0Eta");
 
-        vector<Object> L1sSingleMuOpen3_HLT = nt->get_HLTObjects("hltL3fL1fL1sSingleMuOpenL3Filtered3");
-        vector<Object> L1sSingleMuOpen3_MYHLT = nt->get_HLTObjects("hltL3fL1fL1sSingleMuOpenL3Filtered3");
+        vector<Object> DoubleMu0_MYHLT = nt->get_myHLTObjects("hltL1sDoubleMu0");
+        vector<Object> DoubleMuOpen_MYHLT = nt->get_myHLTObjects("hltL1sDoubleMuOpen");
 
-        // ***************************************
+        vector<Object> SingleEGorSingleorDoubleMu_MYHLT = nt->get_myHLTObjects("hltL1sSingleEGorSingleorDoubleMu");
+        vector<Object> SingleJet24_MYHLT = nt->get_myHLTObjects("hltL1sSingleJet24");
 
-        // vector<Object> L1sSingleMu22_HLT = nt->get_HLTObjects("hltL1fL1sMu22L1Filtered0");
-        // vector<Object> Mu24_HLT = nt->get_HLTObjects("hltL3fL1sSingleMu22L1f0L2f10QL3Filtered24Q");
-        // vector<Object> Mu50_HLT = nt->get_HLTObjects("hltL3fL1sMu22Or25L1f0L2f10QL3Filtered50Q");
-        // vector<Object> Mu50L1Shower_HLT = nt->get_HLTObjects("hltL3fL1sSingleMuOpenCandidateL1f0L2f3QL3Filtered50Q");
-        // vector<Object> TkMu100_HLT = nt->get_HLTObjects("hltL3fL1sMu25f0TkFiltered100Q");
-        // vector<Object> OldMu100_HLT = nt->get_HLTObjects("hltL3fL1sMu22Or25L1f0L2f10QL3Filtered100Q");
-        // vector<Object> ECALIsoMu24_HLT = nt->get_HLTObjects("hltL3crIsoL1sSingleMu22L1f0L2f10QL3f24QL3pfecalIsoRhoFiltered");
-        // vector<Object> HCALIsoMu24_HLT = nt->get_HLTObjects("hltL3crIsoL1sSingleMu22L1f0L2f10QL3f24QL3pfhcalIsoRhoFiltered");
-        // vector<Object> IsoMu24_HLT = nt->get_HLTObjects("hltL3crIsoL1sSingleMu22L1f0L2f10QL3f24QL3trkIsoFiltered");
+        vector<Object> SingleMu0Cosmics_MYHLT = nt->get_myHLTObjects("hltL1sSingleMu0Cosmics");
+        vector<Object> SingleMu12_MYHLT = nt->get_myHLTObjects("hltL1sSingleMu12");
+        vector<Object> SingleMu3_MYHLT = nt->get_myHLTObjects("hltL1sSingleMu3");
+        vector<Object> SingleMu5_MYHLT = nt->get_myHLTObjects("hltL1sSingleMu5");
+        vector<Object> SingleMu7_MYHLT = nt->get_myHLTObjects("hltL1sSingleMu7");
+        vector<Object> SingleMu7to30_MYHLT = nt->get_myHLTObjects("hltL1sSingleMu7to30");
+        vector<Object> SingleMuOpen_MYHLT = nt->get_myHLTObjects("hltL1sSingleMuOpen");
 
-        // vector<Object> L1sSingleMu22_MYHLT = nt->get_myHLTObjects("hltL1fL1sMu22L1Filtered0");
-        // vector<Object> Mu24_MYHLT = nt->get_myHLTObjects("hltL3fL1sSingleMu22L1f0L2f10QL3Filtered24Q");
-        // vector<Object> Mu50_MYHLT = nt->get_myHLTObjects("hltL3fL1sMu22Or25L1f0L2f10QL3Filtered50Q");
-        // vector<Object> TkMu100_MYHLT = nt->get_myHLTObjects("hltL3fL1sMu25f0TkFiltered100Q");
-        // vector<Object> OldMu100_MYHLT = nt->get_myHLTObjects("hltL3fL1sMu22Or25L1f0L2f10QL3Filtered100Q");
-        // vector<Object> ECALIsoMu24_MYHLT = nt->get_myHLTObjects("hltL3crIsoL1sSingleMu22L1f0L2f10QL3f24QL3pfecalIsoRhoFiltered");
-        // vector<Object> HCALIsoMu24_MYHLT = nt->get_myHLTObjects("hltL3crIsoL1sSingleMu22L1f0L2f10QL3f24QL3pfhcalIsoRhoFiltered");
-        // vector<Object> IsoMu24_MYHLT = nt->get_myHLTObjects("hltL3crIsoL1sSingleMu22L1f0L2f10QL3f24QL3trkIsoFiltered");
+        vector<Object> L1sDoubleMu0L2_MYHLT = nt->get_myHLTObjects("hltL2fL1fL1sDoubleMu0L2Filtered0PPRef");
+        vector<Object> L1sSingleMu12L2_MYHLT = nt->get_myHLTObjects("hltL2fL1fL1sSingleMu7L2Filtered12PPRef");
+        vector<Object> L1sSingleMu7L2_MYHLT = nt->get_myHLTObjects("hltL2fL1fL1sSingleMu7L2Filtered7PPRef");
+        vector<Object> L1sSingleMu0L3_MYHLT = nt->get_myHLTObjects("hltL3fL1fL1sDoubleMu0L3Filtered0PPRef");
+        vector<Object> L1sSingleMu12L3_MYHLT = nt->get_myHLTObjects("hltL3fL1fL1sSingleMu7L3Filtered12PPRef");
+
+        vector<Object> CaloFwdJet1_MYHLT = nt->get_myHLTObjects("hltSingleCaloFwdJet1");
+        vector<Object> CaloJet10_MYHLT = nt->get_myHLTObjects("hltSingleCaloJet10");
+
 
         // -- TnP selection
         vector<Object> muons = nt->get_offlineMuons(); //get muons' information (in the Ntuple, muon_* )
@@ -1044,14 +985,14 @@ void HLTEffAnalyzer(
                 double pair_mass = invMass(i_mu, j_mu);
                 // cout << "pair_mass: " << pair_mass << endl;
                 
-                // if (pair_mass < 2.7){
-                //   cout<< "pair mass is less than 2.7 GeV" <<endl;
-                //   continue;
-                // }
-                // if (pair_mass > 3.5){
-                //   cout<<"pair mass is greater than 3.5 GeV"<<endl;
-                //     continue;
-                // }
+                if (pair_mass < 2.7){
+                  // cout<< "pair mass is less than 2.7 GeV" <<endl;
+                  continue;
+                }
+                if (pair_mass > 3.5){
+                  // cout<<"pair mass is greater than 3.5 GeV"<<endl;
+                    continue;
+                }
 
                 j_mu.addVar("pair_mass", pair_mass);
                 pass++;
@@ -1060,6 +1001,7 @@ void HLTEffAnalyzer(
             }
         }
 
+        // -- L3 Muon Collection (The size of this has to be matched with L3 Type. See line 1158)
         vector<vector<Object>*> L3MuonColls {
             &probes,  // for L1 muon eff
             &L2Muons,
@@ -1080,56 +1022,41 @@ void HLTEffAnalyzer(
             &hltPixelTracksInRegionL1Associated,
             &hltIterL3OIMuonTrackAssociated,
 
-            // &IterL1sSingleMu3_HLT,
-            // &IterL1sSingleMu5_HLT,
-            // &IterL1sSingleMu7_HLT,
-            // &IterL1sSingleMuOpen0_HLT,
-            // &L1sSingleMu3_HLT,
-
-            // &L1sSingleMuOpen3_HLT,
-            // &L1sSingleMuOpen3_MYHLT,
-
         // ***************************************
-            &IterL1sSingleMu3_HLT,
-            &IterL1sSingleMu5_HLT,
-            &IterL1sSingleMu7_HLT,
+            &HIRPCMuon_MYHLT,
 
-            &IterL1sSingleMuOpen0_HLT,
-            &L1sSingleMu3_HLT,
-            &L1sSingleMuOpen0_HLT,
+            &L1sDoubleMu0_MYHLT,
+            &L1sSingleMu7_MYHLT,
+
+            &L1sDoubleMu0_MYHLT,
+            &L1sDoubleMu12_MYHLT,
+            &L1sSingleMu0_MYHLT,
+            &L1sSingleMu7_MYHLT,
+
+            &L1sAlCaHIEcal_MYHLT,
             
-            &L1sSingleMu3Jet32_HLT,
-            &L1sSingleMu3Jet40_HLT,
+            &DoubleMu0_MYHLT,
+            &DoubleMuOpen_MYHLT,
 
-            &L1sSingleMuOpenL10_HLT,
+            &SingleEGorSingleorDoubleMu_MYHLT,
+            &SingleJet24_MYHLT,
 
-            &L1sSingleMuOpen3_HLT,
-            &L1sSingleMuOpen3_MYHLT,
+            &SingleMu0Cosmics_MYHLT,
+            &SingleMu12_MYHLT,
+            &SingleMu3_MYHLT,
+            &SingleMu5_MYHLT,
+            &SingleMu7_MYHLT ,
+            &SingleMu7to30_MYHLT,
+            &SingleMuOpen_MYHLT,
 
-        // ***************************************
-            // &HIL3SingleMu12,
-            // &HIL2DoubleMu0_M1p5to6_Open,
-            // &HIL3DoubleMu0_Quarkonia_Open,
-            // &HIL3SingleMu3_Open,
-            // &HIL2DoubleMu0_M7to15_Open
-            // &L1sSingleMu22_HLT,
-            // &Mu24_HLT,
-            // &Mu50_HLT,
-            // &Mu50_HLT, // Mu50OrOldMu100OrTkMu100
-            // &Mu50L1Shower_HLT,
-            // &Mu50_HLT, // Mu50OrL1Shower
-            // &Mu50_HLT, // Mu50OrL1ShowerOrOldMu100OrTkMu100
-            // &ECALIsoMu24_HLT,
-            // &HCALIsoMu24_HLT,
-            // &IsoMu24_HLT,
+            &L1sDoubleMu0L2_MYHLT,
+            &L1sSingleMu12L2_MYHLT,
+            &L1sSingleMu7L2_MYHLT,
+            &L1sSingleMu0L3_MYHLT,
+            &L1sSingleMu12L3_MYHLT,
 
-            // &L1sSingleMu22_MYHLT,
-            // &Mu24_MYHLT,
-            // &Mu50_MYHLT,
-            // &Mu50_MYHLT, // Mu50OrOldMu100OrTkMu100
-            // &ECALIsoMu24_MYHLT,
-            // &HCALIsoMu24_MYHLT,
-            // &IsoMu24_MYHLT,
+            &CaloFwdJet1_MYHLT,
+            &CaloJet10_MYHLT            
         };
 
         if (L3types.size() != L3MuonColls.size()) {
@@ -1262,7 +1189,7 @@ void HLTEffAnalyzer(
                         //cout<<"matched = "<<(matched_L1SQ22?"true":"false")<<", l1matched = "<<(m1atched_L1SQ22?"true":"false")<<endl;
                         int matched_idx = -1e6;
 
-                        // HERE !!!
+                        // HERE !!! --determine matched_idx value
                         vector<int> L3map(L3Coll->size(), -1);
                         if (L3type.Contains("L1Muon")) {
                             matched_idx = -1e6;
@@ -1298,9 +1225,14 @@ void HLTEffAnalyzer(
                         //                                probemu.matched( *L3Coll, L3map, 0.1, 0.5 );  // IO tracks
                         // }
                         else if (
-                             L3type.Contains("L1sSingleMuOpen") // HLT_Mu50_L1SingleMuShower_v shares the final filter with HLT_Mu50_IsoVVVL_PFHT450_v. So, events should explicitly pass this path
+                             L3type.Contains("L1sSingleMu5")
                         ) {
-                             if (nt->path_fired("HLT_HIL3SingleMu12_v3")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
+                            matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("DoubleMu0") 
+                        ) {
+                             if (nt->path_fired("HLT_PPRefL1DoubleMu0_v2")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
                              // cout << "matched_idx(L1SingleMuOpen): "<< matched_idx << endl;
                         }
                         else {
@@ -1353,6 +1285,7 @@ void HLTEffAnalyzer(
                             probemu.addVar("dR", probemu.deltaR(L3Coll->at(matched_idx)));
                         }
 
+                        // --
                         int matched_idx_res = -1e6;
                         vector<int> L3map2(L3Coll->size(), -1);
                         matched_idx_res = looseMatch ? probemu.matched( *L3Coll, L3map2, 0.3 ) :  // L2 muon
