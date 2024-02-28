@@ -433,7 +433,7 @@ void HLTEffAnalyzer(
     // -- Output
     TString fileName = TString::Format( "hist-%s-%s", ver.Data(), tag.Data() );
     if(JobId != "")  fileName = fileName + TString::Format("--%s", JobId.Data());
-    TFile *f_output = TFile::Open(outputDir+fileName+"-Eff_ppRefMCJPsi.root", "RECREATE");
+    TFile *f_output = TFile::Open(outputDir+fileName+"-Eff_ppRefMCJPsi_FullEvents.root", "RECREATE");
     // TFile *f_output = TFile::Open(outputDir+fileName+"-Eff_after.root", "RECREATE");
 
     // -- Event chain
@@ -1230,9 +1230,14 @@ void HLTEffAnalyzer(
                             matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
                         }
                         else if (
+                             L3type.Contains("myL1sSingleMu12L3")
+                        ) {
+                            matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
                              L3type.Contains("DoubleMu0") 
                         ) {
-                             if (nt->path_fired("HLT_PPRefL1DoubleMu0_v2")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
+                             if (nt->path_myFired("HLT_PPRefL1DoubleMu0_v2")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
                              // cout << "matched_idx(L1SingleMuOpen): "<< matched_idx << endl;
                         }
                         else {

@@ -291,12 +291,12 @@ public :
     vector<Object> get_iterL3IOFromL1();
     vector<Object> get_iterL3MuonNoID();
     vector<Object> get_iterL3Muon();
-    // bool path_fired( TString path = "HLT_Mu50_L1SingleMuShower_v" );
-    bool path_fired( TString path = "HLT_HIL3SingleMu12_v3" );
-    // vector<Object> get_HLTObjects( TString filter = "hltL3fL1TkSingleMu22L3Filtered24Q" );
-    // vector<Object> get_myHLTObjects( TString filter = "hltL3fL1TkSingleMu22L3Filtered24Q" );
+
+    bool path_fired( TString path = "HLT_PPRefL1DoubleMu0_v2" );
+    bool path_myFired( TString path = "HLT_PPRefL1DoubleMu0_v2" );
     vector<Object> get_HLTObjects( TString filter = "hltL3fL1fL1sSingleMuOpenL3Filtered3" );
-    vector<Object> get_myHLTObjects( TString filter = "hltL3fL1fL1sSingleMuOpenL3Filtered3" );
+    vector<Object> get_myHLTObjects( TString filter = "hltL1sDoubleMu0" );
+    
 
     vector<Object> get_hltIterL3OIMuonTrackAssociated();
     vector<Object> get_hltIter0IterL3MuonTrackAssociated();
@@ -3490,6 +3490,20 @@ bool MuonHLTNtupleRun3::path_fired( TString path )
   }
 
   return fired;
+}
+
+bool MuonHLTNtupleRun3::path_myFired( TString path )
+{
+  bool myFired = false;
+
+  for(unsigned i=0; i<vec_myFiredTrigger->size(); i++) {
+    if(vec_myFiredTrigger->at(i).find(path) != std::string::npos) {
+      myFired = true;
+      break;
+    }
+  }
+
+  return myFired;
 }
 
 vector<Object> MuonHLTNtupleRun3::get_HLTObjects( TString filter )
