@@ -128,7 +128,7 @@ void PrintObject()
   TString analyzerPath = gSystem->Getenv("MUONHLT_ANALYZER_PATH");
   // TString ntuplePath = analyzerPath+"ExampleNtuple_ZMuMu_M50to120.root";
   // TString ntuplePath = analyzerPath+"PbPb2023_MuonHLT_ntuple.root";
-  TString ntuplePath = "ppRefJPsiNtuple.root";
+  TString ntuplePath = "../Analyzer/ppRefMCJPsiNtuple.root";
 
   Example* example = new Example();
   example->AddNtuplePath(ntuplePath);
