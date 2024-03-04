@@ -38,9 +38,11 @@ void printRunTime(TStopwatch timer_)
 }
 
 void drawtnpCompEffL3wrtL1(
-  TString efftag = "PPRefL1SingleMu12", TString ver = "vRun3_01_JPsi", TString SAMPLE = "Run2024", TString tag = "Muon",
+  // The efftag must match the L1Type in "HLTEffAnalyzer.C"
+  TString efftag = "hltL3Merged", TString ver = "vRun3_01", TString SAMPLE = "Run2023", TString tag = "Muon",
+  // TString efftag = "L3SingleMu12", TString ver = "vRun3_01", TString SAMPLE = "Run2023", TString tag = "Muon",
+  // TString efftag2 = "L3SingleMu3_Open", TString ver2 = "vRun3_01", TString SAMPLE2 = "Run2023", TString tag2 = "Muon",
   TString L1tag = "L1DQ2", TString L1str = "L1 qual > 7, p_{T}^{L1} > 2 GeV",
-  //TString L1tag = "L1DQ8", TString L1str = "L1 qual > 7, p_{T}^{L1} > 8 GeV",
   bool isLogy = false  // HERE
 ) {
   TStopwatch timer_total;
@@ -55,8 +57,8 @@ void drawtnpCompEffL3wrtL1(
 
   vector<TString> v_var = {"pt_zoom", "pt", "eta", "phi", "nvtx"};//, "pu"};
   vector< vector<double> > range = {
-    {1, 0, 20},  // pt zoom
-    {1, 0, 30},  // pt
+    {1, 10, 20},  // pt zoom
+    {1, 10, 30},  // pt
     {1, -2.4, 2.4},  // eta
     {1, -TMath::Pi(), TMath::Pi()},
     {1, 1, 10}  // nvtx
@@ -68,13 +70,13 @@ void drawtnpCompEffL3wrtL1(
     range.at(1) = {1, 0, 40};
   }
 
-  const int n_pt_bins = 20-1;
-  double pt_bins[n_pt_bins+1] = {
-    0, 1, 2, 3, 4,
-    5, 6, 7, 8, 9,
-    10, 11, 12, 13, 14,
-    15, 22, 23, 26, 30
-  };
+  // int n_pt_bins = 16-1;
+  // double pt_bins[16] = {
+  //   0, 1, 2, 3, 4,
+  //   5, 6, 7, 8, 9,
+  //   10, 11, 12, 13, 14,
+  //   15/*, 22, 23, 26, 30*/
+  // };
 
   // const int n_pt_bins = 12-1;
   // double pt_bins[n_pt_bins+1] = {
@@ -84,11 +86,11 @@ void drawtnpCompEffL3wrtL1(
   //   /*, 22, 23, 26, 30*/
   // };
 
-  // const int n_pt_bins = 9-1;
-  // double pt_bins[n_pt_bins+1] = {
-  //    0, 2, 4, 6, 8, 
-  //    12, 16, 20, 30
-  // };
+  const int n_pt_bins = 9-1;
+  double pt_bins[n_pt_bins+1] = {
+     0, 2, 4, 6, 8, 
+     12, 16, 20, 30
+  };
 
   // const int n_pt_bins = 14-1;
   // double pt_bins[n_pt_bins+1] = {
@@ -150,37 +152,22 @@ void drawtnpCompEffL3wrtL1(
   };
   // -- input file names
   vector<TString> files = {
-    "../Analyzer/hist-v00-TEST-Eff_ppRefMCJPsi_FullEvents.root",
+    "../Analyzer/hist-v00-TEST-Eff_2023PbPb_8k_test.root",
+    // "../Analyzer/hist-v00-TEST-Eff_2023PbPb_8k_test.root",
   };
 
   vector<TString> types = {
-    //TString("Eff/"+efftag+"/num_Eff_"+L1tag+"_"+efftag+"_RunAll").ReplaceAll("my", ""),
     "Eff/"+efftag+"/num_Eff_"+L1tag+"_"+efftag+"_RunAll",
-    "Eff/"+efftag+"/num_Eff_"+L1tag+"_"+efftag+"_RunAll",
-    // "Eff/"+efftag+"/num_Eff_"+L1tag+"_"+efftag+"_RunAll",
-    // "Eff/"+efftag+"/num_Eff_"+L1tag+"_"+efftag+"_RunAll",
+    // "Eff/"+efftag2+"/num_Eff_"+L1tag+"_"+efftag2+"_RunAll",
   };
   vector<TString> types_den = {
-    //TString("Eff/"+efftag+"/den_Eff_"+L1tag+"_"+efftag+"_RunAll").ReplaceAll("my", ""),
     "Eff/"+efftag+"/den_Eff_"+L1tag+"_"+efftag+"_RunAll",
-    "Eff/"+efftag+"/den_Eff_"+L1tag+"_"+efftag+"_RunAll",
-    // "Eff/"+efftag+"/den_Eff_"+L1tag+"_"+efftag+"_RunAll",
-    // "Eff/"+efftag+"/den_Eff_"+L1tag+"_"+efftag+"_RunAll",
+    // "Eff/"+efftag2+"/den_Eff_"+L1tag+"_"+efftag2+"_RunAll",
   };
   vector<TString> types_str = {
-    // "Run2022G Data",
-    // //"Run3Winer23 DY",
-    // "Run2023B Data",
-    // "Run2023C Data",
-    // "Run2023D Data",
-    // "2024 ppRef MC L1DoubleMu0  "
-    // "2024 ppRef MC hltL1sDoubleMuOpen  "
-    // "2024 ppRef MC L3SingleMu12  ",
-    // "2024 ppRef MC hltL3FromL2Merged",
-    // "2024 ppRef MC hltL3Merged"
-    // "2024 ppRef MC L1SingleMu7"
-    "2024 ppRef MC L1SingleMu12"
-    // Form("2024 ppRef MC %s", (char)efftag)
+    "2023 PbPb L3Merged",
+    // "2023 PbPb L3SingleMu12",
+    // "2023 PbPb L3SingleMu3_Open",
   };
 
   vector<TString> v_pts = {
@@ -354,16 +341,8 @@ void drawtnpCompEffL3wrtL1(
         else if(efftag.Contains("hltIterL3MuonNoID")) L3str = "L3 Muon before Trigger ID";
         else if(efftag == "hltIterL3Muon") L3str = "L3 Muon after Trigger ID";
         else if(efftag.Contains("myDoubleMu0")) L3str = "L1 Double Mu0"; 
-        else if(efftag.Contains("DoubleMuOpen")) L3str = "L1 Double Mu Open"; 
-        else if(efftag.Contains("SingleMu12L3")) L3str = "L3SingleMu12"; 
-        else if(efftag.Contains("myL1sDoubleMu0")) L3str = "L1DoubleMu0";
-        else if(efftag.Contains("myL1sDoubleMu0")) L3str = "L1DoubleMu0";
-        else if(efftag.Contains("PPRefL1SingleMu7")) L3str = "PPRefL1SingleMu7";
-        else L3str = efftag;
-        // else if(efftag.Contains("IsoMu24")) L3str = "Isolated muon with p_{T} > 24 GeV";
-        // else if(efftag.Contains("Mu24")) L3str = "Non-isolated muon with p_{T} > 24 GeV";
-        // else if(efftag.Contains("Mu50OrOldMu100OrTkMu100")) L3str = "Non-isolated muon with p_{T} > 50 GeV";
-        // else if(efftag.Contains("Mu50")) L3str = "Non-isolated muon with p_{T} > 50 GeV";
+        else if(efftag.Contains("L3SingleMu3_Open")) L3str = "";         
+        else if(efftag.Contains("L3SingleMu12")) L3str = ""; 
 
         TLatex latex;
 	      // Latex_Preliminary_13p6TeV( latex );

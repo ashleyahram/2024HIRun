@@ -1,111 +1,7 @@
-#include <iostream>
-#include <fstream>
-#include <vector>
-#include <cmath>
-#include <algorithm>
-
-#include <TH1.h>
-#include <TH2.h>
-#include <TProfile.h>
-#include <TProfile2D.h>
-#include <TF1.h>
-#include <TF2.h>
-#include <TTree.h>
-#include <TTreeCache.h>
-#include <TChain.h>
-#include <TLorentzVector.h>
-#include <TFile.h>
-#include <TDirectory.h>
-#include <TString.h>
-#include <TMath.h>
-#include <TStopwatch.h>
-#include <TTimeStamp.h>
-#include <TSystem.h>
-
 #include "MuonHLTNtupleRun3.h"
+#include "AnalyzerTools.h"
 
 using namespace std;
-
-
-void DEBUG(int i, TString str = "")
-{
-    cout << "DEBUG: " << i << "\t" << str << endl;
-}
-
-void printRunTime(TStopwatch timer_)
-{
-    Double_t cpuTime = timer_.CpuTime();
-    Double_t realTime = timer_.RealTime();
-
-    cout << endl;
-    cout << "************************************************" << endl;
-    cout << "Total real time: " << realTime << " (seconds)" << endl;
-    cout << "Total CPU time:  " << cpuTime << " (seconds)" << endl;
-    cout << "  CPU time / real time = " << cpuTime / realTime << endl;
-    cout << "************************************************" << endl;
-}
-
-void printRunTimeShort(TStopwatch timer_)
-{
-    // Double_t cpuTime = timer_.CpuTime();
-    Double_t realTime = timer_.RealTime();
-
-    cout << "Total real time: " << realTime << " (seconds)" << endl;
-    // cout << "Total CPU time:  " << cpuTime << " (seconds)" << endl;
-}
-
-static inline void printMemory( TString tab = "" )
-{
-    ifstream proc_status("/proc/self/status");
-    string buffer;
-    while (proc_status.peek() != EOF) {
-        getline(proc_status, buffer);
-        TString str = buffer;
-        if(str.Contains("RSS")) {
-            cout << tab << str << endl;
-            break;
-        }
-    }
-}
-
-static inline void loadBar(int x, int n, int r, int w)
-{
-    // Only update r times.
-    if( x == n )
-        cout << endl;
-
-    if ( x % (n/r +1) != 0 ) return;
-
-    // Calculuate the ratio of complete-to-incomplete.
-    float ratio = x/(float)n;
-    int   c     = ratio * w;
-
-    // Show the percentage complete.
-    printf("%3d%% [", (int)(ratio*100) );
-
-    // Show the load bar.
-    for (int x=0; x<c; x++) cout << "=";
-
-    for (int x=c; x<w; x++) cout << " ";
-
-    // ANSI Control codes to go back to the
-    // previous line and clear it.
-    cout << "]\r" << flush;
-}
-
-// -- bin width of the histograms for res (line 764)
-const static int n_eta_bins = 15;
-double eta_bins[n_eta_bins] = {
-  -2.4, -2.1, -1.6, -1.2, -0.9,
-  -0.3, -0.2,  0.0,  0.2,  0.3,
-   0.9,  1.2,  1.6,  2.1,  2.4
-};
-
-const static int n_pt_bins = 9;
-double pt_bins[n_pt_bins] = {
-     0, 2, 4, 6, 8, 
-     12, 16, 20, 30
-};
 
 // -- numerator and denominator histograms for efficiency calculations
 class HistContainer
@@ -351,21 +247,6 @@ private:
     }
 };
 
-struct sort_by_pt
-{
-    inline bool operator() (const Object& a, const Object& b)
-    {
-        return (a.pt > b.pt);
-    }
-};
-
-const double MU_MASS = 0.1056583745;
-
-bool acceptance(Object obj)
-{
-    return ( fabs(obj.eta) < 2.4 );
-}
-
 // TnP criteria
 bool offlineSel(Object obj)
 {
@@ -377,20 +258,6 @@ bool offlineSel(Object obj)
         //obj.get("relTrkIso") < 0.10
     );
     return out;
-}
-
-double invMass(Object obj1, Object obj2)
-{
-    TLorentzVector mu0, mu1;
-    mu0.SetPtEtaPhiM(obj1.pt,
-                     obj1.eta,
-                     obj1.phi,
-                     MU_MASS);
-    mu1.SetPtEtaPhiM(obj2.pt,
-                     obj2.eta,
-                     obj2.phi,
-                     MU_MASS);
-    return (mu0+mu1).M();
 }
 
 // echo 'gROOT->LoadMacro("HLTEffAnalyzer.C+"); gSystem->Exit(0);' | root -b -l
@@ -415,13 +282,18 @@ void HLTEffAnalyzer(
     // -- Input
     vector<TString> paths = vec_Dataset;
     if(tag == "TEST") {
-      paths = { "./ppRefMCJPsiNtuple.root" };
+      // ntuples for PbPb2023 location 
+      // 8k events: /afs/cern.ch/work/s/soohwan/public/PbPb2023_MuonHLT_ntuple_8k.root
+      // 730k events: /eos/cms/store/group/phys_heavyions/soohwan/Run3_2023/./PostRunHLT/TriggerStudy_Run375754_DetailedForMu_PbPb2023_CMSSW_13_2_6_patch2_soohwan_09Nov2023_v1/ntuple.root
+      // 788k events: /eos/cms/store/group/phys_heavyions/soohwan/Run3_2023/PostRunHLT/MuonHLTRunBefore_21Nov2023_v4.root
+      // 1.4M events: /eos/cms/store/group/phys_heavyions/soohwan/Run3_2023/PostRunHLT/MuonHLTRunAfter_20Nov2023_v4.root
+      paths = { "./PbPb2023_MuonHLT_ntuple_8k.root" };
     }
 
     // -- Output
     TString fileName = TString::Format( "hist-%s-%s", ver.Data(), tag.Data() );
     if(JobId != "")  fileName = fileName + TString::Format("--%s", JobId.Data());
-    TFile *f_output = TFile::Open(outputDir+fileName+"-Eff_ppRefMCJPsi_FullEvents.root", "RECREATE");
+    TFile *f_output = TFile::Open(outputDir+fileName+"-Eff_2023PbPb_8k_test.root", "RECREATE"); // output name
 
     // -- Event chain
     TChain *_chain_Ev          = new TChain("ntupler/ntuple");
@@ -510,7 +382,7 @@ void HLTEffAnalyzer(
     TH1D *h_gen_hard_acc_phi = new TH1D("h_gen_hard_acc_phi", "", 64, -3.2, 3.2);
             
     // -- Determine L3types' names
-    // (This determines the file names of the histogram when it is saved)
+    // (This determines the file names of the histogram when it is saved, the name could be whatever you want to call, but it should be unique)
     // (Also, these correspond one-on-one with L3MuonColls (see line 890 to 948 and 1000 to 1055), which is where the muon information is stored from the ntuple)
     vector<TString> L3types = {
         "L1Muon",
@@ -522,8 +394,8 @@ void HLTEffAnalyzer(
         "hltIter0",
         "hltIter0FromL1",
 
-        "hltL3FromL2Merged", // the type I'm plotting (1)
-        "hltL3Merged", // the type I'm plotting (2)
+        "hltL3FromL2Merged", 
+        "hltL3Merged", 
         "hltIterL3MuonNoIDTrack",
         "hltIterL3MuonTrack",
 
@@ -534,125 +406,74 @@ void HLTEffAnalyzer(
 
         // ***************************************
         // -- filters
-        "myHIRPCMuon",
-
-        "myIterL1sDoubleMu0",
-        "myIterL1sSingleMu7",
-
-        "myL1sDoubleMu0",
-        "myL1sDoubleMu12",
-        "myL1sSingleMu0",
-        "myL1sSingleMu7",
-
-        "myL1sAlCaHIEcal",
-        
-        "myDoubleMu0",
-        "myDoubleMuOpen",
-
-        "mySingleEGorSingleorDoubleMu",
-        "mySingleJet24",
-
-        "mySingleMu0Cosmics",
-        "mySingleMu12",
-        "mySingleMu3",
-        "mySingleMu5",
-        "mySingleMu7 ",
-        "mySingleMu7to30",
-        "mySingleMuOpen",
-
-        "myL1sDoubleMu0L2",
-        "myL1sSingleMu12L2",
-        "myL1sSingleMu7L2",
-        "myL1sSingleMu0L3",
-        "myL1sSingleMu12L3",
-
-        "myCaloFwdJet1",
-        "myCaloJet10",    
+        "IterL3L1sSingleMuOpen",
+        "IterL3L1sSingleMu3",
+        "L1sSingleMu7",
 
         // ***************************************
-        // -- paths
-        "PPRefL1SingleMu7",
-        "PPRefL1SingleMu12",
-        "PPRefL1DoubleMu0", 
-        "PPRefL2DoubleMu0",
-        "PPRefL3SingleMu5",  
-        "PPRefL3SingleMu7", 
-        "PPRefL3SingleMu12", 
-        "PPRefL3SingleMu15",    
-        "PPRefL3SingleMu20"  
+        // -- paths        
+        "L3SingleMu3_Open",
+        "L3SingleMu5", 
+        "L3SingleMu12"
     };
 
     vector<TString> HLTpaths = {
-        "AlCa_EcalPhiSym",
-        "AlCa_LumiPixelsCounts_Random",
-        "HLT_EcalCalibration",
-        "HLT_HcalCalibration",
-        "HLT_HcalNZS",
-        "HLT_HcalPhiSym",
-        "HLT_PPRefZeroBias",
-        "HLT_PPRefL1SingleMu0_Cosmics",
-        "HLT_PPRefL1SingleMu7",
-        "HLT_PPRefL1SingleMu12"
-        "HLT_PPRefL1DoubleMu0",
-        "HLT_PPRefL2DoubleMu0",
-        "HLT_PPRefL3SingleMu5",
-        "HLT_PPRefL3SingleMu7",
-        "HLT_PPRefL3SingleMu12",
-        "HLT_PPRefL3SingleMu15",
-        "HLT_PPRefL3SingleMu20",
-        "HLT_PPRefL3DoubleMu0",
-        "Dataset_AlCaLumiPixelsCountsExpress",
-        "Dataset_AlCaLumiPixelsCountsPrompt",
-        "Dataset_AlCaPhiSym",
-        "Dataset_EcalLaser",
-        "Dataset_HcalNZS",
-        "Dataset_PPRefZeroBias"
-        "Dataset_PPRefDoubleMuon",
-        "Dataset_PPRefSingleMuon"
-        "Dataset_PPRefZeroBias",
-        "Dataset_TestEnablesEcalHcal",
-        "Dataset_TestEnablesEcalHcalDQM"
+        "L2SingleMu3_Open"
+        "L3SingleMu3_Open",
+        "L3SingleMu5"
+        "L3SingleMu12"
     };
 
-        // -- a part of the filter names and HLT paths in pp ref HLT menu
+        // -- a part of the filter names and HLT paths in PbPb HLT menu
         // (Using the script (PrintObject.cxx) in the Ntupler directory, we can extract the fired filter names in the ntuple)
         // (I matched the corresponding HLT path using condDB)
         // {{{ 
         // (filter name / HLT path)
-        // hltHIRPCMuonNormaL1Filtered / AlCa_HIRPCMuonNormalisation 
+        // hltL1fForIterL3L1fL1sSingleMuOpenL1Filtered0 / HLT_HIL3SingleMu3_Open_v
+        // hltL1fForIterL3L1fL1sSingleMuOpenSinglejet28L1Filtered0 / HLT_HIL3SingleMu3_SinglePuAK4CaloJet40_v
+        // hltL1fForIterL3L1fL1sSingleMu3L1Filtered0 / HLT_HIL3SingleMu5_v
+        // hltL1fForIterL3L1fL1sSingleMu3Singlejet32L1Filtered0 / HLT_HIL3SingleMu5_SinglePuAK4CaloJet40_v
+        // hltL1fForIterL3L1fL1sSingleMu5L1Filtered0
+        // hltL1fForIterL3L1fL1sSingleMu7L1Filtered0 / HLT_HIL3SingleMu7L1Filtered0
 
-        // hltL1fForIterL3L1fL1sDoubleMu0L1Filtered0PPRef / HLT_PPRefL3DoubleMu0
-        // hltL1fForIterL3L1fL1sSingleMu7L1Filtered7PPRef / HLT_PPRefL3SingMu7, HLT_PPRefL3SingMu12, HLT_PPRefL3SingMu15, HLT_PPRefL3SingMu20 
+        // hltL1fL1sSingleMuOpenL1Filtered0 / HLT_HIL1SingleMu0_Open_v, HLT_HIL2SingleMu3_Open_v,HLT_HIL3SingleMu3_Open_v
+        // hltL1fL1sSingleMuOpenSingleJet28MuFiltered0
+        // hltL1fL1sSingleMuOpenSingleJet44MuFiltered0
+        // hltL1fL1sSingleMu3L1Filtered0
+        // hltL1fL1sSingleMu3SingleJet32MuFiltered0
+        // hltL1fL1sSingleMu3SingleJet40MuFiltered0
+        // hltL1fL1sSingleMu5L1Filtered0
+        // hltL1fL1sSingleMu7L1Filtered0 / HLT_HIL3SingleMu12_v
 
-        // hltL1fL1sDoubleMu0L1Filtered0PPRef / HLT_PPRefL1DoubleMu0, HLT_PPRefL2DoubleMu0, HLT_PPRefL3DoubleMu0
-        // hltL1fL1sDoubleMu12L1Filtered12PPRef / HLT_PPRefL1SingleMu12
-        // hltL1fL1sSingleMu0CosmicsL1Filtered0PPRef / HLT_PPRefL1SingleMu0_Cosmics
-        // hltL1fL1sSingleMu7L1Filtered7PPRef / HLT_PPRefL1SingleMu7, HLT_PPRefL2SingleMu12, HLT_PPRefL2SingleMu15, HLT_PPRefL2SingleMu20, HLT_PPRefL2SingleMu7, HLT_PPRefL3SingleMu12, HLT_PPRefL3SingleMu15, HLT_PPRefL3SingleMu20, HLT_PPRefL3SingleMu7
+        // hltL1sSingleMuOpenBptxAND
+        // hltL1sSingleMuOpenSingleJet28MidEta2p7BptxAND
+        // hltL1sSingleMuOpenSingleJet44MidEta2p7BptxAND
+        // hltL1sSingleMuOpenNotMBHF2AND
+        // hltL1sSingleMuOpenNotMBHF2OR
+        // hltL1sSingleMuOpenORSingleMuCosmicEMTFNotMBHF2AND
+        // hltL1sSingleMuOpenORSingleMuCosmicEMTFNotMBHF2OR
 
-        // hltL1sAlCaHIEcalPi0Eta / AlCa_HIEcalEtaEBonly, AlCa_HIEcalEtaEEonly, AlCa_HIEcalPi0EBonly, AlCa_HIEcalPi0EEonly
+        // hltL1sSingleMu0BptxAND
+        // hltL1sSingleMu3BptxAND
+        // hltL1sSingleMu3SingleJet32MidEta2p7BptxAND
+        // hltL1sSingleMu3SingleJet40MidEta2p7BptxAND
+        // hltL1sSingleMu5BptxAND
+        // hltL1sSingleMu7BptxAND
+        // hltL1sSingleMuCosmicNotMBHF2AND
+        // hltL1sSingleMuCosmicNotMBHF2OR
 
-        // hltL1sDoubleMu0 / HLT_PPRefL1DoubleMu0, HLT_PPRefL2DoubleMu0, HLT_PPRefL3DoubleMu0
-        // hltL1sDoubleMuOpen / HLT_PPRefL1DoubleMu0_Open, HLT_PPRefL2DoubleMu0_Open, HLT_PPRefL3DoubleMu0_Open
+        // hltL2fL1fL1sSingleMuOpenL2Filtered0
+        // hltL2fL1fL1sSingleMuOpenL2Filtered3
+        // hltL2fL1fL1sSingleMuOpenSingleJet28L2Filtered0
+        // hltL2fL1fL1sSingleMu3L2Filtered3
+        // hltL2fL1fL1sSingleMu3SingleJet32L2Filtered0
 
-        // hltL1sSingleEGorSingleorDoubleMu / HLT_HcalPhiSym
-        // hltL1sSingleJet24 / HLT_PPRefDmesonTrackingGlobal_Dpt25
+        // hltL1sDoubleMuOpenMaxDr3p5BptxAND
+        
+        // hltL2fL1fL1sDoubleMuOpenL2Filtered0
 
-        // hltL1sSingleMu0Cosmics / HLT_PPRefL1SingleMu0_Cosmics
-        // hltL1sSingleMu12 / HLT_PPRefL1SingleMu12
-        // hltL1sSingleMu3 / HLT_PPRefL3SingleMu3
-        // hltL1sSingleMu5 / HLT_PPRefL3SingleMu5
-        // hltL1sSingleMu7 / AlCa_HIRPCMuonNormalisation, HLT_PPRefL1SingleMu7, HLT_PPRefL2SingleMu12, HLT_PPRefL2SingleMu15, HLT_PPRefL2SingleMu20, HLT_PPRefL2SingleMu7, HLT_PPRefL3SingleMu12, HLT_PPRefL3SingleMu15, HLT_PPRefL3SingleMu20, HLT_PPRefL3SingleMu7
-        // hltL1sSingleMu7to30 / AlCa_HIRPCMuonNormalisation
-        // hltL1sSingleMuOpen / HLT_PPRefL2SingleMu20
-
-        // hltL2fL1fL1sDoubleMu0L2Filtered0PPRef / HLT_PPRefL2DoubleMu0, HLT_PPRefL3DoubleMu0
-        // hltL2fL1fL1sSingleMu7L2Filtered12PPRef / HLT_PPRefL2SingleMu12
-        // hltL2fL1fL1sSingleMu7L2Filtered7PPRef / HLT_PPRefL2SingMu7, HLT_PPRefL3SingMu12, HLT_PPRefL3SingMu15, HLT_PPRefL3SingMu20, HLT_PPRefL3SingMu7
-        // hltL3fL1fL1sDoubleMu0L3Filtered0PPRef / HLT_PPRefL3DoubleMu0
-        // hltL3fL1fL1sSingleMu7L3Filtered12PPRef / HLT_PPRefL3SingleMu12
-
-        // hltSingleCaloFwdJet10 / HLT_AK4CaloJetFwd100, HLT_AK4PFJetFwd40
-        // hltSingleCaloJet10 / HLT_AK4PFJet40 
+        // hltL3fL1fL1sSingleMuOpenL3Filtered3 / HLT_HIL3SingleMu3_Open_v
+        // hltL3fL1fL1sSingleMuOpenSingleJet28L3Filtered3
         // }}}
 
     // -- Efficiency
@@ -933,41 +754,11 @@ void HLTEffAnalyzer(
         vector<Object> hltIterL3OIMuonTrackAssociated = nt->get_hltIterL3OIMuonTrackAssociated();
         
         // ***************************************
-        vector<Object> HIRPCMuon_MYHLT = nt->get_myHLTObjects("hltHIRPCMuonNormaL1Filtered");
-        
-        vector<Object> IterL1sDoubleMu0_MYHLT = nt->get_myHLTObjects("hltL1fForIterL3L1fL1sDoubleMu0L1Filtered0PPRef");
-        vector<Object> IterL1sSingleMu7_MYHLT = nt->get_myHLTObjects("hltL1fForIterL3L1fL1sSingleMu7L1Filtered7PPRef");
-        
-        vector<Object> L1sDoubleMu0_MYHLT = nt->get_myHLTObjects("hltL1fL1sDoubleMu0L1Filtered0PPRef");
-        vector<Object> L1sDoubleMu12_MYHLT = nt->get_myHLTObjects("hltL1fL1sDoubleMu12L1Filtered12PPRef");
-        vector<Object> L1sSingleMu0_MYHLT = nt->get_myHLTObjects("hltL1fL1sSingleMu0CosmicsL1Filtered0PPRef");
-        vector<Object> L1sSingleMu7_MYHLT = nt->get_myHLTObjects("hltL1fL1sSingleMu7L1Filtered7PPRef");
-
-        vector<Object> L1sAlCaHIEcal_MYHLT = nt->get_myHLTObjects("hltL1sAlCaHIEcalPi0Eta");
-
-        vector<Object> DoubleMu0_MYHLT = nt->get_myHLTObjects("hltL1sDoubleMu0"); //
-        vector<Object> DoubleMuOpen_MYHLT = nt->get_myHLTObjects("hltL1sDoubleMuOpen");
-
-        vector<Object> SingleEGorSingleorDoubleMu_MYHLT = nt->get_myHLTObjects("hltL1sSingleEGorSingleorDoubleMu");
-        vector<Object> SingleJet24_MYHLT = nt->get_myHLTObjects("hltL1sSingleJet24");
-
-        vector<Object> SingleMu0Cosmics_MYHLT = nt->get_myHLTObjects("hltL1sSingleMu0Cosmics");
-        vector<Object> SingleMu12_MYHLT = nt->get_myHLTObjects("hltL1sSingleMu12");
-        vector<Object> SingleMu3_MYHLT = nt->get_myHLTObjects("hltL1sSingleMu3");
-        vector<Object> SingleMu5_MYHLT = nt->get_myHLTObjects("hltL1sSingleMu5");
-        vector<Object> SingleMu7_MYHLT = nt->get_myHLTObjects("hltL1sSingleMu7");
-        vector<Object> SingleMu7to30_MYHLT = nt->get_myHLTObjects("hltL1sSingleMu7to30");
-        vector<Object> SingleMuOpen_MYHLT = nt->get_myHLTObjects("hltL1sSingleMuOpen");
-
-        vector<Object> L1sDoubleMu0L2_MYHLT = nt->get_myHLTObjects("hltL2fL1fL1sDoubleMu0L2Filtered0PPRef");
-        vector<Object> L1sSingleMu12L2_MYHLT = nt->get_myHLTObjects("hltL2fL1fL1sSingleMu7L2Filtered12PPRef");
-        vector<Object> L1sSingleMu7L2_MYHLT = nt->get_myHLTObjects("hltL2fL1fL1sSingleMu7L2Filtered7PPRef");
-        vector<Object> L1sSingleMu0L3_MYHLT = nt->get_myHLTObjects("hltL3fL1fL1sDoubleMu0L3Filtered0PPRef");
-        vector<Object> L1sSingleMu12L3_MYHLT = nt->get_myHLTObjects("hltL3fL1fL1sSingleMu7L3Filtered12PPRef");
-
-        vector<Object> CaloFwdJet1_MYHLT = nt->get_myHLTObjects("hltSingleCaloFwdJet1");
-        vector<Object> CaloJet10_MYHLT = nt->get_myHLTObjects("hltSingleCaloJet10");
-
+        // -- Get object collections of the filters
+        // nt->get_myHLTObjects("<the exact filter name in the HLT menu>")
+        vector<Object> IterL3SingleMuOpen_MYHLT = nt->get_myHLTObjects("hltL1fForIterL3L1fL1sSingleMuOpenL1Filtered0");
+        vector<Object> IterL3SingleMu3_MYHLT = nt->get_myHLTObjects("hltL1fForIterL3L1fL1sSingleMu3L1Filtered0"); 
+        vector<Object> L1sSingleMu7_MYHLT = nt->get_myHLTObjects("hltL1fL1sSingleMu7L1Filtered0");
 
         // -- TnP selection
         vector<Object> muons = nt->get_offlineMuons(); //get muons' information (in the Ntuple, muon_* )
@@ -987,12 +778,12 @@ void HLTEffAnalyzer(
 
                 if (i_mu.get("charge") * j_mu.get("charge") > 0) continue;
                 
-                double pair_mass = invMass(i_mu, j_mu);
+                // double pair_mass = invMass(i_mu, j_mu);
                 
-                if (pair_mass < 2.7) continue;
-                if (pair_mass > 3.5) continue;
+                // if (pair_mass < 2.7) continue;
+                // if (pair_mass > 3.5) continue;
 
-                j_mu.addVar("pair_mass", pair_mass);
+                // j_mu.addVar("pair_mass", pair_mass);
 
                 probes.push_back(j_mu);
             }
@@ -1021,52 +812,15 @@ void HLTEffAnalyzer(
 
         // ***************************************
         // -- filters
-            &HIRPCMuon_MYHLT,
-
-            &L1sDoubleMu0_MYHLT,
+            &IterL3SingleMuOpen_MYHLT,  
+            &IterL3SingleMu3_MYHLT,
             &L1sSingleMu7_MYHLT,
 
-            &L1sDoubleMu0_MYHLT,
-            &L1sDoubleMu12_MYHLT,
-            &L1sSingleMu0_MYHLT,
-            &L1sSingleMu7_MYHLT,
-
-            &L1sAlCaHIEcal_MYHLT,
-            
-            &DoubleMu0_MYHLT,
-            &DoubleMuOpen_MYHLT,
-
-            &SingleEGorSingleorDoubleMu_MYHLT,
-            &SingleJet24_MYHLT,
-
-            &SingleMu0Cosmics_MYHLT,
-            &SingleMu12_MYHLT,
-            &SingleMu3_MYHLT,
-            &SingleMu5_MYHLT,
-            &SingleMu7_MYHLT ,
-            &SingleMu7to30_MYHLT,
-            &SingleMuOpen_MYHLT,
-
-            &L1sDoubleMu0L2_MYHLT,
-            &L1sSingleMu12L2_MYHLT,
-            &L1sSingleMu7L2_MYHLT,
-            &L1sSingleMu0L3_MYHLT,
-            &L1sSingleMu12L3_MYHLT,
-
-            &CaloFwdJet1_MYHLT,
-            &CaloJet10_MYHLT,
-  
-          // ***************************************
-          // -- paths (match with one of the filter names that the path consists of)
-            &L1sSingleMu7_MYHLT, // PPRefL1SingleMu7
-            &L1sDoubleMu12_MYHLT, // PPRefL1SingleMu12
-            &L1sDoubleMu0_MYHLT, // PPRefL1DoubleMu0 
-            &L1sDoubleMu0_MYHLT, // PPRefL2DoubleMu0
-            &SingleMu5_MYHLT, // PPRefL3SingleMu5  
-            &SingleMu7_MYHLT, // PPRefL3SingleMu7
-            &L1sSingleMu12L3_MYHLT, // PPRefL3SingleMu12 
-            &SingleMu7_MYHLT, // PPRefL3SingleMu15    
-            &SingleMu7_MYHLT // PPRefL3SingleMu20         
+        // ***************************************
+        // -- paths (match one of the filter names that the path contains)       
+            &IterL3SingleMuOpen_MYHLT,  
+            &IterL3SingleMu3_MYHLT, 
+            &L1sSingleMu7_MYHLT 
         };
 
         if (L3types.size() != L3MuonColls.size()) {
@@ -1202,103 +956,24 @@ void HLTEffAnalyzer(
                             // cout << "matched_idx(hltPixelTracks): "<< matched_idx << endl;
                         }
                         else if (
-                             L3type.Contains("L1sSingleMu5")
+                             L3type.Contains("IterL3L1sSingleMuOpen")
                         ) {
                             matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
                         }
                         else if (
-                             L3type.Contains("myL1sSingleMu12L3")
+                             L3type.Contains("L3SingleMu3_Open")
                         ) {
-                            matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
-                        }
+                            if (nt->path_myFired("HLT_HIL3SingleMu3_Open_v3")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
+                        }                        
                         else if (
-                             L3type.Contains("PPRefL1SingleMu7") 
+                             L3type.Contains("L3SingleMu12")
                         ) {
-                             if (nt->path_myFired("HLT_PPRefL1SingleMu7_v2")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
-                        }
-                        else if (
-                             L3type.Contains("PPRefL1SingleMu12")
-                        ) {
-                             if (nt->path_myFired("HLT_PPRefL1SingleMu12_v2")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
-                        }
-                        else if (
-                             L3type.Contains("PPRefL1DoubleMu0")
-                        ) {
-                             if (nt->path_myFired("HLT_PPRefL1DoubleMu0_v2")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
-                        }
-                        else if (
-                             L3type.Contains("PPRefL2DoubleMu0")
-                        ) {
-                             if (nt->path_myFired("HLT_PPRefL2DoubleMu0_v2")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
-                        }
-                        else if (
-                             L3type.Contains("PPRefL3SingleMu5")
-                        ) {
-                             if (nt->path_myFired("HLT_PPRefL3SingleMu5_v2")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
-                        }
-                        else if (
-                             L3type.Contains("PPRefL3SingleMu7")
-                        ) {
-                             if (nt->path_myFired("HLT_PPRefL3SingleMu7_v2")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
-                        }
-                        else if (
-                             L3type.Contains("PPRefL3SingleMu12")
-                        ) {
-                             if (nt->path_myFired("HLT_PPRefL3SingleMu12_v2")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
-                        }
-                        else if (
-                             L3type.Contains("PPRefL3SingleMu15")
-                        ) {
-                             if (nt->path_myFired("HLT_PPRefL3SingleMu15_v2")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
-                        }
-                        else if (
-                             L3type.Contains("PPRefL3SingleMu20")
-                        ) {
-                             if (nt->path_myFired("HLT_PPRefL3SingleMu20_v2")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
+                          if (nt->path_myFired("HLT_HIL3SingleMu12_v3")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
                         }
                         else {
                             matched_idx = looseMatch ? probemu.matched( *L3Coll, L3map, 0.3 ) :  // L2 muon
                                                        probemu.matched( *L3Coll, L3map, 0.1, 0.5 );  // IO tracks
                         }
-
-
-
-                        // // Mu50OrOldMu100OrTkMu100
-                        // if (L3type.Contains("Mu50OrOldMu100OrTkMu100") &&
-                        //     matched_idx < 0) {
-                        //     vector<int> TkMu100map(L3types.at(i).Contains("my")? TkMu100_MYHLT.size() : TkMu100_HLT.size(), -1);
-                        //     matched_idx = probemu.matched(L3types.at(i).Contains("my")? TkMu100_MYHLT : TkMu100_HLT, TkMu100map, 0.1);
-                        //     if (matched_idx >= 0) L3Coll = L3types.at(i).Contains("my")? &TkMu100_MYHLT : &TkMu100_HLT;
-                        //     if (matched_idx < 0) {
-                        //         vector<int> OldMu100map(L3types.at(i).Contains("my")? OldMu100_MYHLT.size() : OldMu100_HLT.size(), -1);
-                        //         matched_idx = probemu.matched(L3types.at(i).Contains("my")? OldMu100_MYHLT : OldMu100_HLT, OldMu100map, 0.1);
-                        //         if (matched_idx >= 0) L3Coll = L3types.at(i).Contains("my")? &OldMu100_MYHLT : &OldMu100_HLT;
-                        //     }
-                        // }
-                        // else if ( // Mu50OrL1ShowerOrOldMu100OrTkMu100 = Mu50 || Mu50_L1SingleMuShower || OldMu100 || TkMu100
-                        //     L3type.Contains("Mu50OrL1ShowerOrOldMu100OrTkMu100") &&
-                        //     matched_idx < 0) {
-                        //     vector<int> Mu50L1Showermap(Mu50L1Shower_HLT.size(), -1);
-                        //     if (nt->path_fired("HLT_Mu50_L1SingleMuShower_v")) matched_idx = probemu.matched(Mu50L1Shower_HLT, Mu50L1Showermap, 0.1); // Mu50_L1SingleMuShower
-                        //     if (matched_idx >= 0) L3Coll = &Mu50L1Shower_HLT;
-                        //     if (matched_idx < 0) {
-                        //         vector<int> TkMu100map(TkMu100_HLT.size(), -1);
-                        //         matched_idx = probemu.matched(TkMu100_HLT, TkMu100map, 0.1);
-                        //         if (matched_idx >= 0) L3Coll = &TkMu100_HLT;
-                        //         if (matched_idx < 0) {
-                        //             vector<int> OldMu100map(OldMu100_HLT.size(), -1);
-                        //             matched_idx = probemu.matched(OldMu100_HLT, OldMu100map, 0.1);
-                        //             if (matched_idx >= 0) L3Coll = &OldMu100_HLT;
-                        //         }
-                        //     }
-                        // }
-                        // else if ( // Mu50OrL1Shower = Mu50 || Mu50_L1SingleMuShower
-                        //     L3type.Contains("Mu50OrL1Shower") &&
-                        //     matched_idx < 0) {
-                        //     vector<int> Mu50L1Showermap(Mu50L1Shower_HLT.size(), -1);
-                        //     if (nt->path_fired("HLT_Mu50_L1SingleMuShower_v")) matched_idx = probemu.matched(Mu50L1Shower_HLT, Mu50L1Showermap, 0.1); // Mu50_L1SingleMuShower
-                        //     if (matched_idx >= 0) L3Coll = &Mu50L1Shower_HLT;
-                        // }
 
                         if (matched_idx < 0) {
                             probemu.addVar("dR", -1.);

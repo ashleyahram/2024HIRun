@@ -31,7 +31,6 @@ public:
     ntuple->TurnOnBranches_HLTMuon();
 
     Int_t nEvent = chain->GetEntries();
-    cout << "Number of Events: " << nEvent << endl;
     for(Int_t i_ev=0; i_ev<nEvent; i_ev++)
     {
       chain->GetEvent(i_ev);
@@ -127,9 +126,7 @@ private:
 void PrintObject()
 {
   TString analyzerPath = gSystem->Getenv("MUONHLT_ANALYZER_PATH");
-  // TString ntuplePath = analyzerPath+"ExampleNtuple_ZMuMu_M50to120.root";
-  // TString ntuplePath = analyzerPath+"PbPb2023_MuonHLT_ntuple.root";
-  TString ntuplePath = "../Analyzer/ppRefMCJPsiNtuple.root";
+  TString ntuplePath = "../Analyzer/PbPb2023_MuonHLT_ntuple_8k.root";
 
   Example* example = new Example();
   example->AddNtuplePath(ntuplePath);
