@@ -287,13 +287,13 @@ void HLTEffAnalyzer(
       // 730k events: /eos/cms/store/group/phys_heavyions/soohwan/Run3_2023/./PostRunHLT/TriggerStudy_Run375754_DetailedForMu_PbPb2023_CMSSW_13_2_6_patch2_soohwan_09Nov2023_v1/ntuple.root
       // 788k events: /eos/cms/store/group/phys_heavyions/soohwan/Run3_2023/PostRunHLT/MuonHLTRunBefore_21Nov2023_v4.root
       // 1.4M events: /eos/cms/store/group/phys_heavyions/soohwan/Run3_2023/PostRunHLT/MuonHLTRunAfter_20Nov2023_v4.root
-      paths = { "./PbPb2023_MuonHLT_ntuple_8k.root" };
+      paths = { "./MuonHLTRunAfter_20Nov2023_v4.root" };
     }
 
     // -- Output
     TString fileName = TString::Format( "hist-%s-%s", ver.Data(), tag.Data() );
     if(JobId != "")  fileName = fileName + TString::Format("--%s", JobId.Data());
-    TFile *f_output = TFile::Open(outputDir+fileName+"-Eff_2023PbPb_8k_test.root", "RECREATE"); // output name
+    TFile *f_output = TFile::Open(outputDir+fileName+"-Eff_2023PbPb_1.4M.root", "RECREATE"); // output name
 
     // -- Event chain
     TChain *_chain_Ev          = new TChain("ntupler/ntuple");

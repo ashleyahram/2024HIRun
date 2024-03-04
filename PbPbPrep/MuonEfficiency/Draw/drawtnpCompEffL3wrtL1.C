@@ -57,8 +57,8 @@ void drawtnpCompEffL3wrtL1(
 
   vector<TString> v_var = {"pt_zoom", "pt", "eta", "phi", "nvtx"};//, "pu"};
   vector< vector<double> > range = {
-    {1, 10, 20},  // pt zoom
-    {1, 10, 30},  // pt
+    {1, 0, 12},  // pt zoom
+    {1, 0, 20},  // pt
     {1, -2.4, 2.4},  // eta
     {1, -TMath::Pi(), TMath::Pi()},
     {1, 1, 10}  // nvtx
@@ -70,51 +70,16 @@ void drawtnpCompEffL3wrtL1(
     range.at(1) = {1, 0, 40};
   }
 
-  // int n_pt_bins = 16-1;
-  // double pt_bins[16] = {
-  //   0, 1, 2, 3, 4,
-  //   5, 6, 7, 8, 9,
-  //   10, 11, 12, 13, 14,
-  //   15/*, 22, 23, 26, 30*/
-  // };
-
-  // const int n_pt_bins = 12-1;
-  // double pt_bins[n_pt_bins+1] = {
-  //   0, 1, 1.5, 2, 
-  //   3, 4, 6, 8, 12, 
-  //   16, 20, 30
-  //   /*, 22, 23, 26, 30*/
-  // };
-
-  const int n_pt_bins = 9-1;
+  const int n_pt_bins = 11-1;
   double pt_bins[n_pt_bins+1] = {
-     0, 2, 4, 6, 8, 
-     12, 16, 20, 30
+    0, 1, 1.5, 2, 3, 
+    4, 6, 8, 12, 16, 
+    20
+    /*, 22, 23, 26, 30*/
   };
 
-  // const int n_pt_bins = 14-1;
-  // double pt_bins[n_pt_bins+1] = {
-  //    10, 11, 11.5, 11.8, 11.9, 
-  //    12, 12.1, 12.2, 13, 14, 
-  //    16, 20, 25, 30
-  // };
-
-
-  // int n_eta_bins = 23-1;
-  // double eta_bins[23] = {
-  //   -2.4, -2.1, -1.9, -1.7, -1.6, -1.5, -1.3, -1.2, -0.9,
-  //   -0.3, -0.2,  0.0,  0.2,  0.3,
-  //    0.9,  1.2, 1.3, 1.5, 1.6, 1.7, 1.9, 2.1,  2.4
-  // };
-
-  // int n_eta_bins = 15-1;
-  // double eta_bins[15] = {
-  //   -2.4, -2.1, -1.6, -1.2, -0.9,
-  //   -0.3, -0.2,  0.0,  0.2,  0.3,
-  //    0.9,  1.2,  1.6,  2.1,  2.4
-  // };
-  int n_eta_bins = 22-1;
-  double eta_bins[22] = {
+  const int n_eta_bins = 22-1;
+  double eta_bins[n_eta_bins+1] = {
     -2.4, -2.1, -1.9, -1.7, -1.6, 
     -1.3, -1.2, -0.9, -0.3, -0.2,  
      0.0,  0.2,  0.3,  0.9,  1.2,  
@@ -152,8 +117,8 @@ void drawtnpCompEffL3wrtL1(
   };
   // -- input file names
   vector<TString> files = {
-    "../Analyzer/hist-v00-TEST-Eff_2023PbPb_8k_test.root",
-    // "../Analyzer/hist-v00-TEST-Eff_2023PbPb_8k_test.root",
+    "../Analyzer/hist-v00-TEST-Eff_2023PbPb_1.4M.root",
+    // "../Analyzer/hist-v00-TEST-Eff_2023PbPb_1.4M.root",
   };
 
   vector<TString> types = {
@@ -254,26 +219,26 @@ void drawtnpCompEffL3wrtL1(
           int nbins0 = den->GetNbinsX();
           // cout << nbins0<< endl;
 
-          if(v_var[ivar] == "eta") {
-            for(int ip=1; ip<=nbins0; ++ip) {
-              cout << "ip, den: " << ip << ", "<< den -> GetBinContent(ip) << endl;
-              cout << "ip, num: " << ip << ", " << num -> GetBinContent(ip) << endl;
-            }
-          }
-          if(v_var[ivar] == "phi") {
-            for(int ip=1; ip<=nbins0; ++ip) {
-              cout << "ip, den: " << ip << ", "<< den -> GetBinContent(ip) << endl;
-              cout << "ip, num: " << ip << ", " << num -> GetBinContent(ip) << endl;
-            }
-          }
+          // if(v_var[ivar] == "eta") {
+          //   for(int ip=1; ip<=nbins0; ++ip) {
+          //     cout << "ip, den: " << ip << ", "<< den -> GetBinContent(ip) << endl;
+          //     cout << "ip, num: " << ip << ", " << num -> GetBinContent(ip) << endl;
+          //   }
+          // }
+          // if(v_var[ivar] == "phi") {
+          //   for(int ip=1; ip<=nbins0; ++ip) {
+          //     cout << "ip, den: " << ip << ", "<< den -> GetBinContent(ip) << endl;
+          //     cout << "ip, num: " << ip << ", " << num -> GetBinContent(ip) << endl;
+          //   }
+          // }
 
           if(v_var[ivar].Contains("pt")) {
             den = (TH1F*)den->Rebin(n_pt_bins, den_name+"_rb", pt_bins);
             num = (TH1F*)num->Rebin(n_pt_bins, num_name+"_rb", pt_bins);
-            for(int ip=1; ip<=nbins0; ++ip) {
-              cout << "ip, den: " << ip << ", "<< den -> GetBinContent(ip) << endl;
-              cout << "ip, num: " << ip << ", " << num -> GetBinContent(ip) << endl;
-            }
+            // for(int ip=1; ip<=nbins0; ++ip) {
+            //   cout << "ip, den: " << ip << ", "<< den -> GetBinContent(ip) << endl;
+            //   cout << "ip, num: " << ip << ", " << num -> GetBinContent(ip) << endl;
+            // }
           }
           else if(v_var[ivar] == "eta") {
             den = (TH1F*)den->Rebin(n_eta_bins, den_name+"_rb", eta_bins);
@@ -286,12 +251,12 @@ void drawtnpCompEffL3wrtL1(
 
           int nbins = den->GetNbinsX();
 
-          if(v_var[ivar] == "eta") {
-            for(int ip=0; ip<nbins; ++ip) {
-              cout << "ip, den: " << ip << ", "<< den -> GetBinContent(ip+1) << endl;
-              cout << "ip, num: " << ip << ", " << num -> GetBinContent(ip+1) << endl;
-            }
-          }
+          // if(v_var[ivar] == "eta") {
+            // for(int ip=0; ip<nbins; ++ip) {
+            //   cout << "ip, den: " << ip << ", "<< den -> GetBinContent(ip+1) << endl;
+            //   cout << "ip, num: " << ip << ", " << num -> GetBinContent(ip+1) << endl;
+            // }
+          // }
 
           c->cd();
 
