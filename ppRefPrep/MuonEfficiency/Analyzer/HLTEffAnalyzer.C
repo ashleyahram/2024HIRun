@@ -363,7 +363,10 @@ const double MU_MASS = 0.1056583745;
 
 bool acceptance(Object obj)
 {
-    return ( fabs(obj.eta) < 2.4 );
+    return ( ( (fabs(obj.eta) < 1.2) && (obj.pt > 3.5) ) || 
+             ( (fabs(obj.eta) > 1.2) && (fabs(obj.eta) < 2.1) && (obj.pt > 5.47 - 1.89 * fabs(obj.eta)) ) ||
+             ( (fabs(obj.eta) > 2.1) && (fabs(obj.eta) < 2.4) && (obj.pt > 1.5) )
+           );
 }
 
 // TnP criteria
@@ -421,7 +424,7 @@ void HLTEffAnalyzer(
     // -- Output
     TString fileName = TString::Format( "hist-%s-%s", ver.Data(), tag.Data() );
     if(JobId != "")  fileName = fileName + TString::Format("--%s", JobId.Data());
-    TFile *f_output = TFile::Open(outputDir+fileName+"-Eff_ppRefMCJPsi_FullEvents.root", "RECREATE");
+    TFile *f_output = TFile::Open(outputDir+fileName+"-Eff_ppRefMCJPsi_test_full_corrected.root", "RECREATE");
 
     // -- Event chain
     TChain *_chain_Ev          = new TChain("ntupler/ntuple");
@@ -522,8 +525,8 @@ void HLTEffAnalyzer(
         "hltIter0",
         "hltIter0FromL1",
 
-        "hltL3FromL2Merged", // the type I'm plotting (1)
-        "hltL3Merged", // the type I'm plotting (2)
+        "hltL3MuonFromL2Merged", // the type I'm plotting (1)
+        "hltL3MuonMerged", // the type I'm plotting (2)
         "hltIterL3MuonNoIDTrack",
         "hltIterL3MuonTrack",
 
@@ -563,7 +566,7 @@ void HLTEffAnalyzer(
         "myL1sDoubleMu0L2",
         "myL1sSingleMu12L2",
         "myL1sSingleMu7L2",
-        "myL1sSingleMu0L3",
+        "myL1sDoubleMu0L3",
         "myL1sSingleMu12L3",
 
         "myCaloFwdJet1",
@@ -583,24 +586,24 @@ void HLTEffAnalyzer(
     };
 
     vector<TString> HLTpaths = {
-        "AlCa_EcalPhiSym",
-        "AlCa_LumiPixelsCounts_Random",
-        "HLT_EcalCalibration",
-        "HLT_HcalCalibration",
-        "HLT_HcalNZS",
-        "HLT_HcalPhiSym",
-        "HLT_PPRefZeroBias",
-        "HLT_PPRefL1SingleMu0_Cosmics",
-        "HLT_PPRefL1SingleMu7",
-        "HLT_PPRefL1SingleMu12"
-        "HLT_PPRefL1DoubleMu0",
-        "HLT_PPRefL2DoubleMu0",
-        "HLT_PPRefL3SingleMu5",
-        "HLT_PPRefL3SingleMu7",
-        "HLT_PPRefL3SingleMu12",
-        "HLT_PPRefL3SingleMu15",
-        "HLT_PPRefL3SingleMu20",
-        "HLT_PPRefL3DoubleMu0",
+        "AlCa_EcalPhiSym_v15",
+        "AlCa_LumiPixelsCounts_Random_v7",
+        "HLT_EcalCalibration_v4",
+        "HLT_HcalCalibration_v6",
+        "HLT_HcalNZS_v17",
+        "HLT_HcalPhiSymv19",
+        "HLT_PPRefZeroBias_v2",
+        "HLT_PPRefL1SingleMu0_Cosmics_v2",
+        "HLT_PPRefL1SingleMu7_v2",
+        "HLT_PPRefL1SingleMu12_v2"
+        "HLT_PPRefL1DoubleMu0_v2",
+        "HLT_PPRefL2DoubleMu0_v2",
+        "HLT_PPRefL3SingleMu5_v2",
+        "HLT_PPRefL3SingleMu7_v2",
+        "HLT_PPRefL3SingleMu12_v2",
+        "HLT_PPRefL3SingleMu15_v2",
+        "HLT_PPRefL3SingleMu20_v2",
+        "HLT_PPRefL3DoubleMu0_v2",
         "Dataset_AlCaLumiPixelsCountsExpress",
         "Dataset_AlCaLumiPixelsCountsPrompt",
         "Dataset_AlCaPhiSym",
@@ -627,7 +630,7 @@ void HLTEffAnalyzer(
         // hltL1fL1sDoubleMu0L1Filtered0PPRef / HLT_PPRefL1DoubleMu0, HLT_PPRefL2DoubleMu0, HLT_PPRefL3DoubleMu0
         // hltL1fL1sDoubleMu12L1Filtered12PPRef / HLT_PPRefL1SingleMu12
         // hltL1fL1sSingleMu0CosmicsL1Filtered0PPRef / HLT_PPRefL1SingleMu0_Cosmics
-        // hltL1fL1sSingleMu7L1Filtered7PPRef / HLT_PPRefL1SingleMu7, HLT_PPRefL2SingleMu12, HLT_PPRefL2SingleMu15, HLT_PPRefL2SingleMu20, HLT_PPRefL2SingleMu7, HLT_PPRefL3SingleMu12, HLT_PPRefL3SingleMu15, HLT_PPRefL3SingleMu20, HLT_PPRefL3SingleMu7
+        // hltL1fL1sSingleMu7L1Filtered7PPRef / HLT_PPRefL1SingleMu7, HLT_PPRefL2SingleMu12, HLT_PPRefL2SingleMu15, HLT_PPRefL2SingleMu20, HLT_PPRefL2SingleMu7, HLT_PPRefL3SingleMu7, HLT_PPRefL3SingleMu12, HLT_PPRefL3SingleMu15, HLT_PPRefL3SingleMu20 
 
         // hltL1sAlCaHIEcalPi0Eta / AlCa_HIEcalEtaEBonly, AlCa_HIEcalEtaEEonly, AlCa_HIEcalPi0EBonly, AlCa_HIEcalPi0EEonly
 
@@ -641,14 +644,15 @@ void HLTEffAnalyzer(
         // hltL1sSingleMu12 / HLT_PPRefL1SingleMu12
         // hltL1sSingleMu3 / HLT_PPRefL3SingleMu3
         // hltL1sSingleMu5 / HLT_PPRefL3SingleMu5
-        // hltL1sSingleMu7 / AlCa_HIRPCMuonNormalisation, HLT_PPRefL1SingleMu7, HLT_PPRefL2SingleMu12, HLT_PPRefL2SingleMu15, HLT_PPRefL2SingleMu20, HLT_PPRefL2SingleMu7, HLT_PPRefL3SingleMu12, HLT_PPRefL3SingleMu15, HLT_PPRefL3SingleMu20, HLT_PPRefL3SingleMu7
+        // hltL1sSingleMu7 / AlCa_HIRPCMuonNormalisation, HLT_PPRefL1SingleMu7, HLT_PPRefL2SingleMu12, HLT_PPRefL2SingleMu15, HLT_PPRefL2SingleMu20, HLT_PPRefL2SingleMu7, HLT_PPRefL3SingleMu7, HLT_PPRefL3SingleMu12, HLT_PPRefL3SingleMu15, HLT_PPRefL3SingleMu20 
         // hltL1sSingleMu7to30 / AlCa_HIRPCMuonNormalisation
         // hltL1sSingleMuOpen / HLT_PPRefL2SingleMu20
 
         // hltL2fL1fL1sDoubleMu0L2Filtered0PPRef / HLT_PPRefL2DoubleMu0, HLT_PPRefL3DoubleMu0
         // hltL2fL1fL1sSingleMu7L2Filtered12PPRef / HLT_PPRefL2SingleMu12
-        // hltL2fL1fL1sSingleMu7L2Filtered7PPRef / HLT_PPRefL2SingMu7, HLT_PPRefL3SingMu12, HLT_PPRefL3SingMu15, HLT_PPRefL3SingMu20, HLT_PPRefL3SingMu7
+        // hltL2fL1fL1sSingleMu7L2Filtered7PPRef / HLT_PPRefL2SingMu7, HLT_PPRefL3SingMu7, HLT_PPRefL3SingMu12, HLT_PPRefL3SingMu15, HLT_PPRefL3SingMu20
         // hltL3fL1fL1sDoubleMu0L3Filtered0PPRef / HLT_PPRefL3DoubleMu0
+        // hltL3fL1fL1sSingleMu7L3Filtered7PPRef / HLT_PPRefL3SingleMu7
         // hltL3fL1fL1sSingleMu7L3Filtered12PPRef / HLT_PPRefL3SingleMu12
 
         // hltSingleCaloFwdJet10 / HLT_AK4CaloJetFwd100, HLT_AK4PFJetFwd40
@@ -962,17 +966,24 @@ void HLTEffAnalyzer(
         vector<Object> L1sDoubleMu0L2_MYHLT = nt->get_myHLTObjects("hltL2fL1fL1sDoubleMu0L2Filtered0PPRef");
         vector<Object> L1sSingleMu12L2_MYHLT = nt->get_myHLTObjects("hltL2fL1fL1sSingleMu7L2Filtered12PPRef");
         vector<Object> L1sSingleMu7L2_MYHLT = nt->get_myHLTObjects("hltL2fL1fL1sSingleMu7L2Filtered7PPRef");
-        vector<Object> L1sSingleMu0L3_MYHLT = nt->get_myHLTObjects("hltL3fL1fL1sDoubleMu0L3Filtered0PPRef");
-        vector<Object> L1sSingleMu12L3_MYHLT = nt->get_myHLTObjects("hltL3fL1fL1sSingleMu7L3Filtered12PPRef");
 
+        vector<Object> L1sDoubleMu0L3_MYHLT = nt->get_myHLTObjects("hltL3fL1fL1sDoubleMu0L3Filtered0PPRef");
+        vector<Object> L1sSingleMu5L3_MYHLT = nt->get_myHLTObjects("hltL3fL1fL1sSingleMu5L3Filtered5PPRef");
+        vector<Object> L1sSingleMu7L3_MYHLT = nt->get_myHLTObjects("hltL3fL1fL1sSingleMu7L3Filtered7PPRef");
+        vector<Object> L1sSingleMu12L3_MYHLT = nt->get_myHLTObjects("hltL3fL1fL1sSingleMu7L3Filtered12PPRef");
+        vector<Object> L1sSingleMu7L315_MYHLT = nt->get_myHLTObjects("hltL3fL1fL1sSingleMu7L3Filtered15PPRef");
+        vector<Object> L1sSingleMu7L320_MYHLT = nt->get_myHLTObjects("hltL3fL1fL1sSingleMu7L3Filtered20PPRef");
+         
         vector<Object> CaloFwdJet1_MYHLT = nt->get_myHLTObjects("hltSingleCaloFwdJet1");
         vector<Object> CaloJet10_MYHLT = nt->get_myHLTObjects("hltSingleCaloJet10");
 
 
         // -- TnP selection
         vector<Object> muons = nt->get_offlineMuons(); //get muons' information (in the Ntuple, muon_* )
-        vector<Object> probes = {};        
+        vector<Object> probes = {}; 
+     
         // tag
+        int nPassedMuons = 0;
         for (auto & i_mu : muons) {
             if (i_mu.pt < 2.) continue;
 
@@ -995,7 +1006,12 @@ void HLTEffAnalyzer(
                 j_mu.addVar("pair_mass", pair_mass);
 
                 probes.push_back(j_mu);
+
+                // nPassedMuons++;
+                bool l1matched_L1DQ2 = j_mu.l1matched(2., 7);
+                if(l1matched_L1DQ2) nPassedMuons++;
             }
+          // cout << i_ev << " PassedMuon: " << nPassedMuons << endl;
         }
 
         // -- L3 Muon Collection (The size of this has to be matched with L3 Type. See line 1158)
@@ -1050,7 +1066,7 @@ void HLTEffAnalyzer(
             &L1sDoubleMu0L2_MYHLT,
             &L1sSingleMu12L2_MYHLT,
             &L1sSingleMu7L2_MYHLT,
-            &L1sSingleMu0L3_MYHLT,
+            &L1sDoubleMu0L3_MYHLT,
             &L1sSingleMu12L3_MYHLT,
 
             &CaloFwdJet1_MYHLT,
@@ -1062,11 +1078,11 @@ void HLTEffAnalyzer(
             &L1sDoubleMu12_MYHLT, // PPRefL1SingleMu12
             &L1sDoubleMu0_MYHLT, // PPRefL1DoubleMu0 
             &L1sDoubleMu0_MYHLT, // PPRefL2DoubleMu0
-            &SingleMu5_MYHLT, // PPRefL3SingleMu5  
-            &SingleMu7_MYHLT, // PPRefL3SingleMu7
+            &L1sSingleMu5L3_MYHLT, // PPRefL3SingleMu5  
+            &L1sSingleMu7L3_MYHLT , // PPRefL3SingleMu7
             &L1sSingleMu12L3_MYHLT, // PPRefL3SingleMu12 
-            &SingleMu7_MYHLT, // PPRefL3SingleMu15    
-            &SingleMu7_MYHLT // PPRefL3SingleMu20         
+            &L1sSingleMu7L315_MYHLT, // PPRefL3SingleMu15    
+            &L1sSingleMu7L320_MYHLT // PPRefL3SingleMu20         
         };
 
         if (L3types.size() != L3MuonColls.size()) {
@@ -1103,9 +1119,10 @@ void HLTEffAnalyzer(
                         if( !acceptance( probemu ) ) continue;
 
                         // --select eta in one bin
-                        if (Etas_bin.at(ieta).at(0) > abs(probemu.eta)) continue;
-                        if (Etas_bin.at(ieta).at(1) < abs(probemu.eta)) continue;
+                        if (Etas_bin.at(ieta).at(0) > abs(probemu.eta)) {cout <<"True1" <<endl; continue;}
+                        if (Etas_bin.at(ieta).at(1) < abs(probemu.eta)) {cout << "True2" <<endl ;continue;}
 
+                        iprobe++;
                         // --New L1s matching
                         /*
                         //if (probemu.pt < 26)
@@ -1179,7 +1196,7 @@ void HLTEffAnalyzer(
                         // bool l1matched_L1DQ8 = probemu.l1matched(8., 7);
                         // bool l1matched_L1DQ22 = probemu.l1matched(22., 7);
 
-                        //cout<<"matched = "<<(matched_L1SQ22?"true":"false")<<", l1matched = "<<(m1atched_L1SQ22?"true":"false")<<endl;
+                        // cout << "matched = " << (matched_L1SQ22?"true":"false") << ", l1matched = " << (m1atched_L1SQ22?"true":"false") <<endl;
                         int matched_idx = -1e6;
 
                         // HERE !!! --determine matched_idx value
@@ -1189,7 +1206,7 @@ void HLTEffAnalyzer(
                         }
                         else if (
                             L3type.Contains("OI") ||
-                            L3type.Contains("L3") ||
+                            L3type.Contains("L3Muon") ||
                             L3type.Contains("GlbTrkMuon") ||
                             (std::find(HLTpaths.begin(), HLTpaths.end(), L3type) != HLTpaths.end())
                         ) {
@@ -1199,7 +1216,6 @@ void HLTEffAnalyzer(
                             L3type.Contains("hltPixelTracks")
                         ) {
                             matched_idx = probemu.matched( *L3Coll, L3map, 0.01 );  // Pixel tracks - TRK guys are using dR 0.01 btw Offline, HLT
-                            // cout << "matched_idx(hltPixelTracks): "<< matched_idx << endl;
                         }
                         else if (
                              L3type.Contains("L1sSingleMu5")
@@ -1213,7 +1229,7 @@ void HLTEffAnalyzer(
                         }
                         else if (
                              L3type.Contains("PPRefL1SingleMu7") 
-                        ) {
+                        ) { 
                              if (nt->path_myFired("HLT_PPRefL1SingleMu7_v2")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
                         }
                         else if (
@@ -1234,12 +1250,16 @@ void HLTEffAnalyzer(
                         else if (
                              L3type.Contains("PPRefL3SingleMu5")
                         ) {
-                             if (nt->path_myFired("HLT_PPRefL3SingleMu5_v2")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
+                             if (nt->path_myFired("HLT_PPRefL3SingleMu5_v2")) {
+                              matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
+                            }
                         }
                         else if (
                              L3type.Contains("PPRefL3SingleMu7")
                         ) {
-                             if (nt->path_myFired("HLT_PPRefL3SingleMu7_v2")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
+                             if (nt->path_myFired("HLT_PPRefL3SingleMu7_v2")) {
+                              matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
+                            }
                         }
                         else if (
                              L3type.Contains("PPRefL3SingleMu12")
@@ -1249,7 +1269,9 @@ void HLTEffAnalyzer(
                         else if (
                              L3type.Contains("PPRefL3SingleMu15")
                         ) {
-                             if (nt->path_myFired("HLT_PPRefL3SingleMu15_v2")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
+                             if (nt->path_myFired("HLT_PPRefL3SingleMu15_v2")) 
+                              {matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
+                              }
                         }
                         else if (
                              L3type.Contains("PPRefL3SingleMu20")
@@ -1358,19 +1380,40 @@ void HLTEffAnalyzer(
                                 }
 
                                 if(l1matched_L1DQ2) {
-                                    hc_Eff_L1DQ2.at(i).at(irun).at(ieta).at(j)->fill_den( probemu, nt->nVertex, nt->dataPU, nt->instLumi, genWeight );
-                                    hc2D_Eff_L1DQ2.at(i).at(irun).at(ieta).at(j)->fill_den( probemu, genWeight );
-
-                                    if(L3type.Contains("L1Muon")) {                                       
-                                        hc_Eff_L1DQ2.at(i).at(irun).at(ieta).at(j)->fill_num( probemu, nt->nVertex, nt->dataPU, nt->instLumi, genWeight );
-                                        hc2D_Eff_L1DQ2.at(i).at(irun).at(ieta).at(j)->fill_num( probemu, genWeight );
-                                    }
-                                    else {
-                                        if( matched_idx > -1 ) {                                          
+                                    if(L3type.Contains("Double")) {
+                                      // if(nPassedMuons == 2) {
+                                      if(iprobe == 1) {
+                                        hc_Eff_L1DQ2.at(i).at(irun).at(ieta).at(j)->fill_den( probemu, nt->nVertex, nt->dataPU, nt->instLumi, genWeight );
+                                        hc2D_Eff_L1DQ2.at(i).at(irun).at(ieta).at(j)->fill_den( probemu, genWeight );
+                                        
+                                        if(L3type.Contains("L1Muon")) {                                       
                                             hc_Eff_L1DQ2.at(i).at(irun).at(ieta).at(j)->fill_num( probemu, nt->nVertex, nt->dataPU, nt->instLumi, genWeight );
                                             hc2D_Eff_L1DQ2.at(i).at(irun).at(ieta).at(j)->fill_num( probemu, genWeight );
                                         }
+                                        else {
+                                            if( matched_idx > -1 ) {                                          
+                                                hc_Eff_L1DQ2.at(i).at(irun).at(ieta).at(j)->fill_num( probemu, nt->nVertex, nt->dataPU, nt->instLumi, genWeight );
+                                                hc2D_Eff_L1DQ2.at(i).at(irun).at(ieta).at(j)->fill_num( probemu, genWeight );
+                                            }
+                                        }
+                                      }
                                     }
+                                    else {
+                                      hc_Eff_L1DQ2.at(i).at(irun).at(ieta).at(j)->fill_den( probemu, nt->nVertex, nt->dataPU, nt->instLumi, genWeight );
+                                      hc2D_Eff_L1DQ2.at(i).at(irun).at(ieta).at(j)->fill_den( probemu, genWeight );
+
+                                      if(L3type.Contains("L1Muon")) {                                       
+                                          hc_Eff_L1DQ2.at(i).at(irun).at(ieta).at(j)->fill_num( probemu, nt->nVertex, nt->dataPU, nt->instLumi, genWeight );
+                                          hc2D_Eff_L1DQ2.at(i).at(irun).at(ieta).at(j)->fill_num( probemu, genWeight );
+                                      }
+                                      else {
+                                          if( matched_idx > -1 ) {                                          
+                                              hc_Eff_L1DQ2.at(i).at(irun).at(ieta).at(j)->fill_num( probemu, nt->nVertex, nt->dataPU, nt->instLumi, genWeight );
+                                              hc2D_Eff_L1DQ2.at(i).at(irun).at(ieta).at(j)->fill_num( probemu, genWeight );
+                                          }
+                                      }
+                                    }
+
                                 }
 
                                 if(l1matched_L1SQ2) {                                   
