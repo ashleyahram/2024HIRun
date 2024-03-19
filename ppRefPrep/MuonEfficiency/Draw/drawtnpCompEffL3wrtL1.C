@@ -72,8 +72,9 @@ void drawtnpCompEffL3wrtL1(
   double pt_bins[n_pt_bins+1] = {
     0, 1, 2, 3, 4,
     5, 6, 7, 8, 9,
-    10, 11, 12, 13, 14,
-    15, 22, 23, 26, 30
+    10, 11, 12, 13, 14, 
+    15, 17, 21, 
+    26, 30
   };
 
   // const int n_pt_bins = 12-1;
@@ -90,13 +91,18 @@ void drawtnpCompEffL3wrtL1(
   //    12, 16, 20, 30
   // };
 
-  // const int n_pt_bins = 14-1;
+  // const int n_pt_bins = 11-1;
   // double pt_bins[n_pt_bins+1] = {
-  //    10, 11, 11.5, 11.8, 11.9, 
-  //    12, 12.1, 12.2, 13, 14, 
-  //    16, 20, 25, 30
+  //    10, 11, 13, 16, 19.9, 
+  //    20.1, 20.5, 21, 22, 25, 
+  //    30
   // };
 
+  // const int n_pt_bins = 8-1;
+  // double pt_bins[n_pt_bins+1] = {
+  //    15, 17, 19, 20, 21, 
+  //    23, 26, 30
+  // };
 
   // int n_eta_bins = 23-1;
   // double eta_bins[23] = {
@@ -150,7 +156,8 @@ void drawtnpCompEffL3wrtL1(
   };
   // -- input file names
   vector<TString> files = {
-    "../Analyzer/hist-v00-TEST-Eff_ppRefMCJPsi_FullEvents.root",
+    "../Analyzer/hist-v00-TEST-Eff_ppRefMCJPsi_test_full_corrected.root",
+    // "../Analyzer/hist-v00-TEST-Eff_ppRefMCJPsi_test_half.root",
   };
 
   vector<TString> types = {
@@ -173,13 +180,16 @@ void drawtnpCompEffL3wrtL1(
     // "Run2023B Data",
     // "Run2023C Data",
     // "Run2023D Data",
-    // "2024 ppRef MC L1DoubleMu0  "
+    // "Before fix",
+    // "After fix"
     // "2024 ppRef MC hltL1sDoubleMuOpen  "
     // "2024 ppRef MC L3SingleMu12  ",
     // "2024 ppRef MC hltL3FromL2Merged",
     // "2024 ppRef MC hltL3Merged"
     // "2024 ppRef MC L1SingleMu7"
-    "2024 ppRef MC L1SingleMu12"
+    // "2024 ppRef MC L1SingleMu12"
+    // "2024 ppRef MC L2DoubleMu0"
+    efftag
     // Form("2024 ppRef MC %s", (char)efftag)
   };
 
@@ -192,6 +202,7 @@ void drawtnpCompEffL3wrtL1(
     "genpt10",
     "genpt12",
     "genpt15",
+    "genpt20",
     // "genpt53",
   };
 
@@ -204,6 +215,7 @@ void drawtnpCompEffL3wrtL1(
     "p_{T}^{offline} > 10 GeV",
     "p_{T}^{offline} > 12 GeV",
     "p_{T}^{offline} > 15 GeV",
+    "p_{T}^{offline} > 20 GeV",
     // "p_{T}^{offline} > 53 GeV",
   };
 
@@ -359,6 +371,10 @@ void drawtnpCompEffL3wrtL1(
         else if(efftag.Contains("myL1sDoubleMu0")) L3str = "L1DoubleMu0";
         else if(efftag.Contains("myL1sDoubleMu0")) L3str = "L1DoubleMu0";
         else if(efftag.Contains("PPRefL1SingleMu7")) L3str = "PPRefL1SingleMu7";
+        else if(efftag.Contains("PPRefL1DoubleMu0")) L3str = "L1DoubleMu0";
+        else if(efftag.Contains("PPRefL3SingleMu5")) L3str = "L3SingleMu5";
+        else if(efftag.Contains("PPRefL3SingleMu7")) L3str = "L3SingleMu7";
+        
         else L3str = efftag;
         // else if(efftag.Contains("IsoMu24")) L3str = "Isolated muon with p_{T} > 24 GeV";
         // else if(efftag.Contains("Mu24")) L3str = "Non-isolated muon with p_{T} > 24 GeV";
