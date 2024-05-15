@@ -38,7 +38,7 @@ void printRunTime(TStopwatch timer_)
 }
 
 void drawtnpCompEffL3wrtL1(
-  TString efftag = "PPRefL1SingleMu12", TString ver = "vRun3_01_JPsi", TString SAMPLE = "Run2024", TString tag = "Muon",
+  TString efftag = "PPRefL1SingleMu7", TString ver = "vRun3_01_JPsi", TString SAMPLE = "Run2024", TString tag = "Muon",
   TString L1tag = "L1DQ2", TString L1str = "L1 qual > 7, p_{T}^{L1} > 2 GeV",
   //TString L1tag = "L1DQ8", TString L1str = "L1 qual > 7, p_{T}^{L1} > 8 GeV",
   bool isLogy = false  // HERE
@@ -55,8 +55,8 @@ void drawtnpCompEffL3wrtL1(
 
   vector<TString> v_var = {"pt_zoom", "pt", "eta", "phi", "nvtx"};//, "pu"};
   vector< vector<double> > range = {
-    {1, 0, 20},  // pt zoom
-    {1, 0, 30},  // pt
+    {1, 10, 20},  // pt zoom
+    {1, 10, 30},  // pt
     {1, -2.4, 2.4},  // eta
     {1, -TMath::Pi(), TMath::Pi()},
     {1, 1, 10}  // nvtx
@@ -68,41 +68,48 @@ void drawtnpCompEffL3wrtL1(
     range.at(1) = {1, 0, 40};
   }
 
-  const int n_pt_bins = 20-1;
-  double pt_bins[n_pt_bins+1] = {
-    0, 1, 2, 3, 4,
-    5, 6, 7, 8, 9,
-    10, 11, 12, 13, 14, 
-    15, 17, 21, 
-    26, 30
-  };
-
-  // const int n_pt_bins = 12-1;
+  /// for offline pt cut 6
+  // const int n_pt_bins = 24-1;
   // double pt_bins[n_pt_bins+1] = {
-  //   0, 1, 1.5, 2, 
-  //   3, 4, 6, 8, 12, 
-  //   16, 20, 30
-  //   /*, 22, 23, 26, 30*/
+  //   0, 1, 2, 3, 4,
+  //   5, 5.9, 6, 6.1, 6.3, 
+  //   6.7, 7, 8, 9, 10, 
+  //   11, 12, 13, 14, 15, 
+  //   17, 21, 26, 30
   // };
 
-  // const int n_pt_bins = 9-1;
+  // /// for offline pt cut 8
+  // const int n_pt_bins = 20-1;
   // double pt_bins[n_pt_bins+1] = {
-  //    0, 2, 4, 6, 8, 
-  //    12, 16, 20, 30
+  //   0, 1, 2, 3, 4,
+  //   5, 6, 7, 8, 9, 
+  //   10, 11, 12, 13, 14, 
+  //   15, 17, 21, 26, 30
   // };
 
+  // /// for offline pt cut 12
   // const int n_pt_bins = 11-1;
   // double pt_bins[n_pt_bins+1] = {
-  //    10, 11, 13, 16, 19.9, 
-  //    20.1, 20.5, 21, 22, 25, 
-  //    30
+  //   10, 11, 12, 12.2, 12.8, 
+  //   13.8, 16, 19, 22, 25, 
+  //   30
   // };
 
-  // const int n_pt_bins = 8-1;
+  // /// for offline pt cut 15
+  // const int n_pt_bins = 13-1;
   // double pt_bins[n_pt_bins+1] = {
-  //    15, 17, 19, 20, 21, 
-  //    23, 26, 30
+  //    10, 11, 12, 13, 14, 
+  //    15, 15.1, 15.6, 17, 
+  //    20, 23, 26, 30
   // };
+
+  /// for offline pt cut 20
+  const int n_pt_bins = 14-1;
+  double pt_bins[n_pt_bins+1] = {
+     10, 11, 12, 13, 14, 
+     15, 16, 17, 20, 20.1, 
+     20.6, 23, 26, 30
+  };
 
   // int n_eta_bins = 23-1;
   // double eta_bins[23] = {
@@ -158,6 +165,7 @@ void drawtnpCompEffL3wrtL1(
   vector<TString> files = {
     "../Analyzer/hist-v00-TEST-Eff_ppRefMCJPsi_test_full_corrected.root",
     // "../Analyzer/hist-v00-TEST-Eff_ppRefMCJPsi_test_half.root",
+    "../Analyzer/hist-v00-TEST-Eff_ppRefMCJPsi_NoPS.root"
   };
 
   vector<TString> types = {
@@ -189,6 +197,7 @@ void drawtnpCompEffL3wrtL1(
     // "2024 ppRef MC L1SingleMu7"
     // "2024 ppRef MC L1SingleMu12"
     // "2024 ppRef MC L2DoubleMu0"
+    efftag,
     efftag
     // Form("2024 ppRef MC %s", (char)efftag)
   };

@@ -418,13 +418,13 @@ void HLTEffAnalyzer(
     // -- Input
     vector<TString> paths = vec_Dataset;
     if(tag == "TEST") {
-      paths = { "./ppRefMCJPsiNtuple.root" };
+      paths = { "./ppRefMCJPsiNtuple_NoPS.root" };
     }
 
     // -- Output
     TString fileName = TString::Format( "hist-%s-%s", ver.Data(), tag.Data() );
     if(JobId != "")  fileName = fileName + TString::Format("--%s", JobId.Data());
-    TFile *f_output = TFile::Open(outputDir+fileName+"-Eff_ppRefMCJPsi_test_full_corrected.root", "RECREATE");
+    TFile *f_output = TFile::Open(outputDir+fileName+"-Eff_ppRefMCJPsi_NoPS.root", "RECREATE");
 
     // -- Event chain
     TChain *_chain_Ev          = new TChain("ntupler/ntuple");
@@ -577,6 +577,10 @@ void HLTEffAnalyzer(
         "PPRefL1SingleMu7",
         "PPRefL1SingleMu12",
         "PPRefL1DoubleMu0", 
+        "PPRefL2SingleMu7",
+        "PPRefL2SingleMu12", 
+        "PPRefL2SingleMu15",   
+        "PPRefL2SingleMu20",                
         "PPRefL2DoubleMu0",
         "PPRefL3SingleMu5",  
         "PPRefL3SingleMu7", 
@@ -964,8 +968,10 @@ void HLTEffAnalyzer(
         vector<Object> SingleMuOpen_MYHLT = nt->get_myHLTObjects("hltL1sSingleMuOpen");
 
         vector<Object> L1sDoubleMu0L2_MYHLT = nt->get_myHLTObjects("hltL2fL1fL1sDoubleMu0L2Filtered0PPRef");
-        vector<Object> L1sSingleMu12L2_MYHLT = nt->get_myHLTObjects("hltL2fL1fL1sSingleMu7L2Filtered12PPRef");
-        vector<Object> L1sSingleMu7L2_MYHLT = nt->get_myHLTObjects("hltL2fL1fL1sSingleMu7L2Filtered7PPRef");
+        vector<Object> L1sSingleMu7L27_MYHLT = nt->get_myHLTObjects("hltL2fL1fL1sSingleMu7L2Filtered7PPRef");
+        vector<Object> L1sSingleMu7L212_MYHLT = nt->get_myHLTObjects("hltL2fL1fL1sSingleMu7L2Filtered12PPRef");
+        vector<Object> L1sSingleMu12L215_MYHLT = nt->get_myHLTObjects("hltL2fL1fL1sSingleMu12L2Filtered15PPRef");
+        vector<Object> L1sSingleMu7L220_MYHLT = nt->get_myHLTObjects("hltL2fL1fL1sSingleMu7L2Filtered20PPRef");
 
         vector<Object> L1sDoubleMu0L3_MYHLT = nt->get_myHLTObjects("hltL3fL1fL1sDoubleMu0L3Filtered0PPRef");
         vector<Object> L1sSingleMu5L3_MYHLT = nt->get_myHLTObjects("hltL3fL1fL1sSingleMu5L3Filtered5PPRef");
@@ -1064,8 +1070,8 @@ void HLTEffAnalyzer(
             &SingleMuOpen_MYHLT,
 
             &L1sDoubleMu0L2_MYHLT,
-            &L1sSingleMu12L2_MYHLT,
-            &L1sSingleMu7L2_MYHLT,
+            &L1sSingleMu7L212_MYHLT,
+            &L1sSingleMu7L27_MYHLT,
             &L1sDoubleMu0L3_MYHLT,
             &L1sSingleMu12L3_MYHLT,
 
@@ -1077,6 +1083,12 @@ void HLTEffAnalyzer(
             &L1sSingleMu7_MYHLT, // PPRefL1SingleMu7
             &L1sDoubleMu12_MYHLT, // PPRefL1SingleMu12
             &L1sDoubleMu0_MYHLT, // PPRefL1DoubleMu0 
+            
+            &L1sSingleMu7L27_MYHLT, // PPRefL2SingleMu7
+            &L1sSingleMu7L212_MYHLT, // PPRefL2SingleMu12
+            &L1sSingleMu12L215_MYHLT, // PPRefL2SingleMu15
+            &L1sSingleMu7L220_MYHLT, // PPRefL2SingleMu20
+
             &L1sDoubleMu0_MYHLT, // PPRefL2DoubleMu0
             &L1sSingleMu5L3_MYHLT, // PPRefL3SingleMu5  
             &L1sSingleMu7L3_MYHLT , // PPRefL3SingleMu7
@@ -1242,6 +1254,26 @@ void HLTEffAnalyzer(
                         ) {
                              if (nt->path_myFired("HLT_PPRefL1DoubleMu0_v2")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
                         }
+                        else if (
+                             L3type.Contains("PPRefL2SingleMu7")
+                        ) {
+                             if (nt->path_myFired("HLT_PPRefL2SingleMu7_v2")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("PPRefL2SingleMu12")
+                        ) {
+                             if (nt->path_myFired("HLT_PPRefL2SingleMu12_v2")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
+                        } 
+                        else if (
+                             L3type.Contains("PPRefL2SingleMu15")
+                        ) {
+                             if (nt->path_myFired("HLT_PPRefL2SingleMu15_v2")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
+                        }      
+                        else if (
+                             L3type.Contains("PPRefL2SingleMu20")
+                        ) {
+                             if (nt->path_myFired("HLT_PPRefL2SingleMu20_v2")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
+                        }                                            
                         else if (
                              L3type.Contains("PPRefL2DoubleMu0")
                         ) {
