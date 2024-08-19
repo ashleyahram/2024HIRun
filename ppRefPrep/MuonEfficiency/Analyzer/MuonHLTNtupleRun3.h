@@ -21,7 +21,97 @@
 #include <vector>
 #include <cmath>
 
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <cmath>
+#include <algorithm>
+
+#include <TH1.h>
+#include <TH2.h>
+#include <TProfile.h>
+#include <TProfile2D.h>
+#include <TF1.h>
+#include <TF2.h>
+#include <TTree.h>
+#include <TTreeCache.h>
+#include <TChain.h>
+#include <TLorentzVector.h>
+#include <TFile.h>
+#include <TDirectory.h>
+#include <TString.h>
+#include <TMath.h>
+#include <TStopwatch.h>
+#include <TTimeStamp.h>
+#include <TSystem.h>
+
 using namespace std;
+
+void DEBUG(int i, TString str = "")
+{
+    cout << "DEBUG: " << i << "\t" << str << endl;
+}
+
+void printRunTime(TStopwatch timer_)
+{
+    Double_t cpuTime = timer_.CpuTime();
+    Double_t realTime = timer_.RealTime();
+
+    cout << endl;
+    cout << "************************************************" << endl;
+    cout << "Total real time: " << realTime << " (seconds)" << endl;
+    cout << "Total CPU time:  " << cpuTime << " (seconds)" << endl;
+    cout << "  CPU time / real time = " << cpuTime / realTime << endl;
+    cout << "************************************************" << endl;
+}
+
+void printRunTimeShort(TStopwatch timer_)
+{
+    // Double_t cpuTime = timer_.CpuTime();
+    Double_t realTime = timer_.RealTime();
+
+    cout << "Total real time: " << realTime << " (seconds)" << endl;
+    // cout << "Total CPU time:  " << cpuTime << " (seconds)" << endl;
+}
+
+static inline void printMemory( TString tab = "" )
+{
+    ifstream proc_status("/proc/self/status");
+    string buffer;
+    while (proc_status.peek() != EOF) {
+        getline(proc_status, buffer);
+        TString str = buffer;
+        if(str.Contains("RSS")) {
+            cout << tab << str << endl;
+            break;
+        }
+    }
+}
+
+static inline void loadBar(int x, int n, int r, int w)
+{
+    // Only update r times.
+    if( x == n )
+        cout << endl;
+
+    if ( x % (n/r +1) != 0 ) return;
+
+    // Calculuate the ratio of complete-to-incomplete.
+    float ratio = x/(float)n;
+    int   c     = ratio * w;
+
+    // Show the percentage complete.
+    printf("%3d%% [", (int)(ratio*100) );
+
+    // Show the load bar.
+    for (int x=0; x<c; x++) cout << "=";
+
+    for (int x=c; x<w; x++) cout << " ";
+
+    // ANSI Control codes to go back to the
+    // previous line and clear it.
+    cout << "]\r" << flush;
+}
 
 class Object
 {
@@ -208,6 +298,32 @@ public:
       return the_i;
     }
 
+    int l1matched( vector<Object>& objects, vector<int>& map, double dR_match = 0.1, double dpt_match = 1.e9 ) {
+      bool found     = false;
+      double the_dR  = dR_match;
+      int the_i = -1e9;
+
+      unsigned n = objects.size();
+      for(unsigned i=0; i<n; ++i) {
+        if( map[i] > 0 )  continue;
+
+        double dR  = deltaR( objects.at(i) );
+        double dpt = fabs( this->pt - objects.at(i).pt ) / this->pt;
+        // if( (dR < the_dR) && (dpt < dpt_match) ) {
+        if(dpt < dpt_match) {
+          found = true;
+          the_dR = dR;
+          the_i = i;
+        }
+      }
+
+      if(found) {
+        map[the_i] = 1;
+      }
+
+      return the_i;
+    }
+
     bool matched( vector<Object>& objects, double dR_match = 0.1, double dpt_match = 1.e9 ) {
       bool found     = false;
 
@@ -260,6 +376,30 @@ public:
       );
     }
 };
+
+struct sort_by_pt
+{
+    inline bool operator() (const Object& a, const Object& b)
+    {
+        return (a.pt > b.pt);
+    }
+};
+
+const double MU_MASS = 0.1056583745;
+
+double invMass(Object obj1, Object obj2)
+{
+    TLorentzVector mu0, mu1;
+    mu0.SetPtEtaPhiM(obj1.pt,
+                     obj1.eta,
+                     obj1.phi,
+                     MU_MASS);
+    mu1.SetPtEtaPhiM(obj2.pt,
+                     obj2.eta,
+                     obj2.phi,
+                     MU_MASS);
+    return (mu0+mu1).M();
+}
 
 class MuonHLTNtupleRun3 {
 public :

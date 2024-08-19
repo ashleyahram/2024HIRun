@@ -18,6 +18,9 @@
 #include <TStopwatch.h>
 #include <TTimeStamp.h>
 #include <TSystem.h>
+#include <TStyle.h>
+#include <TROOT.h>
+#include <TLine.h>
 
 #define DEBUG (0)
 #include "PlotTools.h"
@@ -38,7 +41,15 @@ void printRunTime(TStopwatch timer_)
 }
 
 void drawtnpCompEffL3wrtL1(
-  TString efftag = "PPRefL1SingleMu7", TString ver = "vRun3_01_JPsi", TString SAMPLE = "Run2024", TString tag = "Muon",
+  // TString efftag0 = "PPRefL1SingleMu0_Cosmics", TString efftag1 = "PPRefL1SingleMu7", TString efftag2 = "PPRefL1SingleMu12",
+  TString efftag0 = "PPRefL2SingleMu7", TString efftag1 = "PPRefL2SingleMu12", TString efftag2 = "PPRefL2SingleMu15", TString efftag3 = "PPRefL2SingleMu20",
+  // TString efftag0 = "PPRefL3SingleMu3", TString efftag1 = "PPRefL3SingleMu5", TString efftag2 = "PPRefL3SingleMu7",
+  // TString efftag0 = "PPRefL3SingleMu12", TString efftag1 = "PPRefL3SingleMu15", TString efftag2 = "PPRefL3SingleMu20",
+  // TString efftag0 = "PPRefL1DoubleMu0_Open",  TString efftag1 = "PPRefL1DoubleMu0",
+  // TString efftag0 = "PPRefL2DoubleMu0_Open", TString efftag1 = "PPRefL2DoubleMu0",
+  // TString efftag0 = "PPRefL3DoubleMu0_Open", TString efftag1 = "PPRefL3DoubleMu0",
+  // TString ver = "vRun3_JPsi_PU4_CMSSW_14_0_13", TString SAMPLE = "Run2024 MC prep", TString tag = "Muon",
+  TString ver = "vRun3_Zmm_PU4_CMSSW_14_0_13", TString SAMPLE = "Run2024 MC prep", TString tag = "Muon",
   TString L1tag = "L1DQ2", TString L1str = "L1 qual > 7, p_{T}^{L1} > 2 GeV",
   //TString L1tag = "L1DQ8", TString L1str = "L1 qual > 7, p_{T}^{L1} > 8 GeV",
   bool isLogy = false  // HERE
@@ -49,14 +60,14 @@ void drawtnpCompEffL3wrtL1(
   gStyle->SetPalette(kRainBow);
   TH1::SetDefaultSumw2(kTRUE);
 
-  TString Dir = "./plots_"+ver+"/"+tag+"/Eff_"+efftag+"/"+L1tag+"/";
+  TString Dir = "./plots_"+ver+"/"+tag+"/Eff_"+efftag1+"/"+L1tag+"/";
   if (gSystem->mkdir(Dir,kTRUE) != -1)
     gSystem->mkdir(Dir,kTRUE);
 
   vector<TString> v_var = {"pt_zoom", "pt", "eta", "phi", "nvtx"};//, "pu"};
   vector< vector<double> > range = {
-    {1, 10, 20},  // pt zoom
-    {1, 10, 30},  // pt
+    {1, 10, 100},  // pt zoom
+    {1, 0, 100},  // pt
     {1, -2.4, 2.4},  // eta
     {1, -TMath::Pi(), TMath::Pi()},
     {1, 1, 10}  // nvtx
@@ -68,6 +79,10 @@ void drawtnpCompEffL3wrtL1(
     range.at(1) = {1, 0, 40};
   }
 
+  if (tag == "Zmm" || tag == "Bs") {
+    range.at(0) = {1, 0, 40};
+    range.at(1) = {1, 0, 40};
+  }
   /// for offline pt cut 6
   // const int n_pt_bins = 24-1;
   // double pt_bins[n_pt_bins+1] = {
@@ -79,13 +94,24 @@ void drawtnpCompEffL3wrtL1(
   // };
 
   // /// for offline pt cut 8
-  // const int n_pt_bins = 20-1;
+  // const int n_pt_bins = 22-1;
   // double pt_bins[n_pt_bins+1] = {
   //   0, 1, 2, 3, 4,
   //   5, 6, 7, 8, 9, 
   //   10, 11, 12, 13, 14, 
-  //   15, 17, 21, 26, 30
+  //   15, 17, 21, 26, 31, 
+  //   36, 40
   // };
+
+  /// for offline pt cut 8
+  const int n_pt_bins = 24-1;
+  double pt_bins[n_pt_bins+1] = {
+    10, 11, 12, 13, 14, 
+    15, 17, 20, 25, 30, 
+    35, 40, 45, 50, 55,
+    60, 65, 70, 75, 80,
+    85, 90, 95, 100
+  };
 
   // /// for offline pt cut 12
   // const int n_pt_bins = 11-1;
@@ -103,13 +129,13 @@ void drawtnpCompEffL3wrtL1(
   //    20, 23, 26, 30
   // };
 
-  /// for offline pt cut 20
-  const int n_pt_bins = 14-1;
-  double pt_bins[n_pt_bins+1] = {
-     10, 11, 12, 13, 14, 
-     15, 16, 17, 20, 20.1, 
-     20.6, 23, 26, 30
-  };
+  // /// for offline pt cut 20
+  // const int n_pt_bins = 14-1;
+  // double pt_bins[n_pt_bins+1] = {
+  //    10, 11, 12, 13, 14, 
+  //    15, 16, 17, 20, 20.1, 
+  //    20.6, 23, 26, 30
+  // };
 
   // int n_eta_bins = 23-1;
   // double eta_bins[23] = {
@@ -138,24 +164,24 @@ void drawtnpCompEffL3wrtL1(
   vector<TString> etas_str_long = {"|#eta^{offline}| < 2.4"};//, "|#eta^{offline}| < 0.9", "0.9 < |#eta^{offline}| < 1.2", "1.2 < |#eta^{offline}| < 2.1", "2.1 < |#eta^{offline}| < 2.4"};
 
   vector<Color_t> v_color = {
-    kBlack,
-    kBlue,
+    // kBlack,
     kRed,
-    //kOrange,
-    kGreen+2,
-    //kCyan+2,
-    //kPink+4,
-    //kGray+2,
-    //kMagenta,
+    // kOrange,
+    // kGreen+2,
+    kCyan+2,
+    // kPink+1,
+    kBlue-2,
+    kGray+2,
+    // kMagenta,
   };
   vector<int> v_marker = {
     20,
     22,
     23,
-    22,
-    //25,
-    //26,
-    //23,
+    24,
+    25,
+    26,
+    23,
     //22,
     //26,
     //23,
@@ -163,22 +189,45 @@ void drawtnpCompEffL3wrtL1(
   };
   // -- input file names
   vector<TString> files = {
-    "../Analyzer/hist-v00-TEST-Eff_ppRefMCJPsi_test_full_corrected.root",
-    // "../Analyzer/hist-v00-TEST-Eff_ppRefMCJPsi_test_half.root",
-    "../Analyzer/hist-v00-TEST-Eff_ppRefMCJPsi_NoPS.root"
+    // "../Analyzer/hist-v00-TEST-Eff_ppRefMCJPsi_PU4_CMSSW14_0_13.root",
+    // "../Analyzer/hist-v00-TEST-Eff_ppRefMCJPsi_PU4_CMSSW14_0_13.root",
+    // "../Analyzer/hist-v00-TEST-Eff_ppRefMCJPsi_PU4_CMSSW14_0_13.root",
+    // "../Analyzer/hist-v00-TEST-Eff_ppRefMCJPsi_PU4_CMSSW14_0_13.root",
+    
+    // "../Analyzer/hist-v00-TEST-Eff_ppRefMCJPsi_PU10_CMSSW14_0_13.root",
+    // "../Analyzer/hist-v00-TEST-Eff_ppRefMCJPsi_PU10_CMSSW14_0_13.root",
+    // "../Analyzer/hist-v00-TEST-Eff_ppRefMCJPsi_PU10_CMSSW14_0_13.root",
+    // "../Analyzer/hist-v00-TEST-Eff_ppRefMCJPsi_PU10_CMSSW14_0_13.root",
+    // "../Analyzer/hist-v00-TEST-Eff_ppRefMCJPsi_PU10_CMSSW14_0_13.root",
+    // "../Analyzer/hist-v00-TEST-Eff_ppRefMCJPsi_PU10_CMSSW14_0_13.root",
+
+    // "../Analyzer/hist-v00-TEST-Eff_ppRefMCZmm_PU4_CMSSS14_0_13.root"
+
+    "../Analyzer/hist-v00-TEST-Eff_ppRefMCZmm_PU4_CMSSW14_0_13.root",
+    "../Analyzer/hist-v00-TEST-Eff_ppRefMCZmm_PU4_CMSSW14_0_13.root",
+    "../Analyzer/hist-v00-TEST-Eff_ppRefMCZmm_PU4_CMSSW14_0_13.root",
+    "../Analyzer/hist-v00-TEST-Eff_ppRefMCZmm_PU4_CMSSW14_0_13.root",
   };
 
   vector<TString> types = {
     //TString("Eff/"+efftag+"/num_Eff_"+L1tag+"_"+efftag+"_RunAll").ReplaceAll("my", ""),
-    "Eff/"+efftag+"/num_Eff_"+L1tag+"_"+efftag+"_RunAll",
-    "Eff/"+efftag+"/num_Eff_"+L1tag+"_"+efftag+"_RunAll",
+    "Eff/"+efftag0+"/num_Eff_"+L1tag+"_"+efftag0+"_RunAll",
+    "Eff/"+efftag1+"/num_Eff_"+L1tag+"_"+efftag1+"_RunAll",
+    "Eff/"+efftag2+"/num_Eff_"+L1tag+"_"+efftag2+"_RunAll",
+    "Eff/"+efftag3+"/num_Eff_"+L1tag+"_"+efftag3+"_RunAll",
+    // "Eff/"+efftag4+"/num_Eff_"+L1tag+"_"+efftag4+"_RunAll",
+    // "Eff/"+efftag5+"/num_Eff_"+L1tag+"_"+efftag5+"_RunAll",
     // "Eff/"+efftag+"/num_Eff_"+L1tag+"_"+efftag+"_RunAll",
     // "Eff/"+efftag+"/num_Eff_"+L1tag+"_"+efftag+"_RunAll",
   };
   vector<TString> types_den = {
     //TString("Eff/"+efftag+"/den_Eff_"+L1tag+"_"+efftag+"_RunAll").ReplaceAll("my", ""),
-    "Eff/"+efftag+"/den_Eff_"+L1tag+"_"+efftag+"_RunAll",
-    "Eff/"+efftag+"/den_Eff_"+L1tag+"_"+efftag+"_RunAll",
+    "Eff/"+efftag0+"/den_Eff_"+L1tag+"_"+efftag0+"_RunAll",
+    "Eff/"+efftag1+"/den_Eff_"+L1tag+"_"+efftag1+"_RunAll",
+    "Eff/"+efftag2+"/den_Eff_"+L1tag+"_"+efftag2+"_RunAll",
+    "Eff/"+efftag3+"/den_Eff_"+L1tag+"_"+efftag3+"_RunAll",
+    // "Eff/"+efftag4+"/den_Eff_"+L1tag+"_"+efftag4+"_RunAll",
+    // "Eff/"+efftag5+"/den_Eff_"+L1tag+"_"+efftag5+"_RunAll",
     // "Eff/"+efftag+"/den_Eff_"+L1tag+"_"+efftag+"_RunAll",
     // "Eff/"+efftag+"/den_Eff_"+L1tag+"_"+efftag+"_RunAll",
   };
@@ -197,8 +246,12 @@ void drawtnpCompEffL3wrtL1(
     // "2024 ppRef MC L1SingleMu7"
     // "2024 ppRef MC L1SingleMu12"
     // "2024 ppRef MC L2DoubleMu0"
-    efftag,
-    efftag
+    efftag0,
+    efftag1,
+    efftag2,
+    efftag3,
+    // efftag4,
+    // efftag5,
     // Form("2024 ppRef MC %s", (char)efftag)
   };
 
@@ -212,7 +265,9 @@ void drawtnpCompEffL3wrtL1(
     "genpt12",
     "genpt15",
     "genpt20",
-    // "genpt53",
+    "genpt30",
+    "genpt57",
+    "genpt100",
   };
 
   vector<TString> v_pts_str = {
@@ -225,7 +280,9 @@ void drawtnpCompEffL3wrtL1(
     "p_{T}^{offline} > 12 GeV",
     "p_{T}^{offline} > 15 GeV",
     "p_{T}^{offline} > 20 GeV",
-    // "p_{T}^{offline} > 53 GeV",
+    "p_{T}^{offline} > 30 GeV",
+    "p_{T}^{offline} > 57 GeV",
+    "p_{T}^{offline} > 100 GeV",
   };
 
   for(unsigned i_eta=0; i_eta<etas_str.size(); i_eta++){
@@ -242,8 +299,13 @@ void drawtnpCompEffL3wrtL1(
           ymax = 1.6;//1.1;//1.25;//1.2;//1.1;
         }
 
-        TString canvasName = TString::Format("Eff_%s_%s_%s_%s_%s",
-                                             efftag.Data(),
+        TString canvasName = TString::Format("Eff_%s_%s_%s_%s_%s_%s_%s_%s",
+                                             efftag0.Data(),
+                                             efftag1.Data(),
+                                             efftag2.Data(),
+                                             efftag3.Data(),
+                                             // efftag4.Data(),
+                                             // efftag5.Data(),
                                              L1tag.Data(),
                                              etas_str.at(i_eta).Data(),
                                              v_pts[ipt].Data(),
@@ -273,8 +335,8 @@ void drawtnpCompEffL3wrtL1(
 
           TString titleX = GetTitleX(hist_var+"_reco");
           TString titleY = "HLT efficiency"; //"L3/L1 efficiency";
-          if(efftag.Contains("L2Muon")) titleY.ReplaceAll("L3", "L2");
-          if(efftag.Contains("PixelTracks")) titleY.ReplaceAll("L3", "PixelTrack");
+          if(efftag1.Contains("L2Muon")) titleY.ReplaceAll("L3", "L2");
+          if(efftag1.Contains("PixelTracks")) titleY.ReplaceAll("L3", "PixelTrack");
 
           TString den_name = TString::Format("%s_%s_%s_%s", the_type_den.Data(), etas_str.at(i_eta).Data(), v_pts[ipt].Data(), hist_var.Data());
           TString num_name = TString::Format("%s_%s_%s_%s", the_type_num.Data(), etas_str.at(i_eta).Data(), v_pts[ipt].Data(), hist_var.Data());
@@ -364,36 +426,43 @@ void drawtnpCompEffL3wrtL1(
         legend->Draw();
 
         TString L3str = "";
-        if(efftag == "L2Muon") L3str = "L2 Muon";
-        else if(efftag == "hltOI") L3str = "Outside-in L3 MuonTrack";
-        else if(efftag == "hltPixelTracksInRegionL2") L3str = "PixelTrack near L2";
-        else if(efftag == "hltPixelTracksInRegionL1") L3str = "PixelTrack near L1";
-        else if(efftag == "hltPixelTracks") L3str = "PixelTrack";
-        else if(efftag == "hltIter0FromL1") L3str = "Inside-out L3 MuonTrack from L1";
-        else if(efftag == "hltL3FromL2Merged") L3str = "L3 MuonTrack from L2";
-        else if(efftag == "hltL3Merged") L3str = "L3 MuonTrack";
-        else if(efftag.Contains("hltIterL3MuonNoID")) L3str = "L3 Muon before Trigger ID";
-        else if(efftag == "hltIterL3Muon") L3str = "L3 Muon after Trigger ID";
-        else if(efftag.Contains("myDoubleMu0")) L3str = "L1 Double Mu0"; 
-        else if(efftag.Contains("DoubleMuOpen")) L3str = "L1 Double Mu Open"; 
-        else if(efftag.Contains("SingleMu12L3")) L3str = "L3SingleMu12"; 
-        else if(efftag.Contains("myL1sDoubleMu0")) L3str = "L1DoubleMu0";
-        else if(efftag.Contains("myL1sDoubleMu0")) L3str = "L1DoubleMu0";
-        else if(efftag.Contains("PPRefL1SingleMu7")) L3str = "PPRefL1SingleMu7";
-        else if(efftag.Contains("PPRefL1DoubleMu0")) L3str = "L1DoubleMu0";
-        else if(efftag.Contains("PPRefL3SingleMu5")) L3str = "L3SingleMu5";
-        else if(efftag.Contains("PPRefL3SingleMu7")) L3str = "L3SingleMu7";
+        if(efftag1 == "L2Muon") L3str = "L2 Muon";
+        else if(efftag1 == "hltOI") L3str = "Outside-in L3 MuonTrack";
+        else if(efftag1 == "hltPixelTracksInRegionL2") L3str = "PixelTrack near L2";
+        else if(efftag1 == "hltPixelTracksInRegionL1") L3str = "PixelTrack near L1";
+        else if(efftag1 == "hltPixelTracks") L3str = "PixelTrack";
+        else if(efftag1 == "hltIter0FromL1") L3str = "Inside-out L3 MuonTrack from L1";
+        else if(efftag1 == "hltL3FromL2Merged") L3str = "L3 MuonTrack from L2";
+        else if(efftag1 == "hltL3Merged") L3str = "L3 MuonTrack";
+        else if(efftag1.Contains("hltIterL3MuonNoID")) L3str = "L3 Muon before Trigger ID";
+        else if(efftag1 == "hltIterL3Muon") L3str = "L3 Muon after Trigger ID";
         
-        else L3str = efftag;
+        else if(efftag1.Contains("PPRefL1SingleMu")) L3str = "PPRef L1 Single Mu";
+
+        else if(efftag1.Contains("PPRefL2SingleMu")) L3str = "PPRef L2 Single Mu";
+
+        else if(efftag1.Contains("PPRefL3SingleMu")) L3str = "PPRef L3 Single Mu";
+
+        else if(efftag1.Contains("PPRefL1DoubleMu")) L3str = "PPRef L1 Double Mu";
+
+        else L3str = efftag1;
         // else if(efftag.Contains("IsoMu24")) L3str = "Isolated muon with p_{T} > 24 GeV";
         // else if(efftag.Contains("Mu24")) L3str = "Non-isolated muon with p_{T} > 24 GeV";
         // else if(efftag.Contains("Mu50OrOldMu100OrTkMu100")) L3str = "Non-isolated muon with p_{T} > 50 GeV";
         // else if(efftag.Contains("Mu50")) L3str = "Non-isolated muon with p_{T} > 50 GeV";
 
+        // // lines
+        // TLine* horline = new TLine(0, 1, 20, 1);
+
+        // horline->SetLineStyle(kDashed);
+        // horline->SetLineColor(kGray);
+        // horline->SetLineWidth(2);
+        // horline->Draw("SAME");
+
         TLatex latex;
 	      // Latex_Preliminary_13p6TeV( latex );
         Latex_Preliminary_5p36TeV( latex );
-        latex.DrawLatexNDC( 0.45,0.96, "#scale[0.8]{#font[42]{"+SAMPLE+"}}");
+        latex.DrawLatexNDC(0.45,0.96, "#scale[0.8]{#font[42]{"+SAMPLE+"}}");
         latex.DrawLatexNDC(0.16, 0.90, "#font[42]{#scale[0.6]{"+L3str+"}}");
         latex.DrawLatexNDC(0.16, 0.85, "#font[42]{#scale[0.6]{"+L1str+"}}");
         latex.DrawLatexNDC((i_eta==2?0.66:0.70), 0.89, "#font[42]{#scale[0.8]{"+etas_str_long.at(i_eta)+"}}");

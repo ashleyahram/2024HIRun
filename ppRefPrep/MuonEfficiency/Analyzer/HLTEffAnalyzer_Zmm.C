@@ -10,10 +10,13 @@ double eta_bins[n_eta_bins] = {
    0.9,  1.2,  1.6,  2.1,  2.4
 };
 
-const static int n_pt_bins = 9;
+const static int n_pt_bins = 24;
 double pt_bins[n_pt_bins] = {
-     0, 2, 4, 6, 8, 
-     12, 16, 20, 30
+     0, 2, 4, 6, 8,
+     10, 12, 15, 20, 30,
+     37, 42, 48, 51, 57,
+     62, 69, 74, 80, 86,
+     93, 99, 100, 105
 };
 
 // -- numerator and denominator histograms for efficiency calculations
@@ -23,10 +26,11 @@ public:
     HistContainer(
       TString _Tag,
       vector<TString> _variables = { "pt", "eta", "phi", "nvtx"},//, "pu", "lumi"},
+      
       // -- determine the bin width of the histograms
       vector<vector<double>> _ranges = {
         // { number of bins, min, max }
-        { 400, 0, 40 }, // pt
+        { 1200, 0, 120 }, // pt
         { 48, -2.4, 2.4 }, // eta
         { 10, -TMath::Pi(), TMath::Pi() }, // phi
         { 10, 0, 10 }//, // nvtx
@@ -263,9 +267,12 @@ private:
 
 bool acceptance(Object obj)
 {
-    return ( ( (fabs(obj.eta) < 1.2) && (obj.pt > 3.5) ) || 
-             ( (fabs(obj.eta) > 1.2) && (fabs(obj.eta) < 2.1) && (obj.pt > 5.47 - 1.89 * fabs(obj.eta)) ) ||
-             ( (fabs(obj.eta) > 2.1) && (fabs(obj.eta) < 2.4) && (obj.pt > 1.5) )
+    // return ( ( (fabs(obj.eta) < 1.2) && (obj.pt > 3.5) ) || 
+    //          ( (fabs(obj.eta) > 1.2) && (fabs(obj.eta) < 2.1) && (obj.pt > 5.47 - 1.89 * fabs(obj.eta)) ) ||
+    //          ( (fabs(obj.eta) > 2.1) && (fabs(obj.eta) < 2.4) && (obj.pt > 1.5) )
+    //        );
+
+    return ( (fabs(obj.eta) < 2.4) && (obj.pt > 3.5)
            );
 }
 
@@ -285,7 +292,7 @@ bool offlineSel(Object obj)
 // echo 'gROOT->LoadMacro("HLTEffAnalyzer.C+"); gSystem->Exit(0);' | root -b -l
 // root -l -b -q 'HLTEffAnalyzer.C("v00", "TEST")' >&log&
 
-void HLTEffAnalyzer(
+void HLTEffAnalyzer_Zmm(
     TString ver = "v00", TString tag = "TEST",
     vector<TString> vec_Dataset = {}, TString JobId = "",
     TString outputDir = "./",
@@ -304,13 +311,13 @@ void HLTEffAnalyzer(
     // -- Input
     vector<TString> paths = vec_Dataset;
     if(tag == "TEST") {
-      paths = { "./ntuple_JPsi_PU4_CMSSW_14_0_13.root" };
+      paths = { "./ntuple_Zmm_PU4_CMSSW_14_0_13.root" };
     }
 
     // -- Output
     TString fileName = TString::Format( "hist-%s-%s", ver.Data(), tag.Data() );
     if(JobId != "")  fileName = fileName + TString::Format("--%s", JobId.Data());
-    TFile *f_output = TFile::Open(outputDir+fileName+"-Eff_ppRefMCJPsi_PU4_CMSSW14_0_13_l1.root", "RECREATE");
+    TFile *f_output = TFile::Open(outputDir+fileName+"-Eff_ppRefMCZmm_PU4_CMSSW14_0_13.root", "RECREATE");
 
     // -- Event chain
     TChain *_chain_Ev          = new TChain("ntupler/ntuple");
@@ -483,7 +490,7 @@ void HLTEffAnalyzer(
         "PPRefL3SingleMu7", 
         "PPRefL3SingleMu12", 
         "PPRefL3SingleMu15",    
-        "PPRefL3SingleMu20"  
+        "PPRefL3SingleMu20"   
     };
 
     vector<TString> HLTpaths = {
@@ -493,7 +500,6 @@ void HLTEffAnalyzer(
         "HLT_HcalCalibration_v6",
         "HLT_HcalNZS_v20",
         "HLT_HcalPhiSymv22",
-        
         "HLT_PPRefZeroBias_v12",
 
         "HLT_PPRefL1DoubleMu0_Cosmics_v5",          
@@ -578,21 +584,11 @@ void HLTEffAnalyzer(
 
     // -- Efficiency
     vector<double> Eff_genpt_mins = {
-        0,
-        2,
-        4,
-        6,
-        8,
-        10,
-        12,
-        15,
-        20,
-        25
-        // 16,
-        // 26,
-        // 30,
-        // 53,
-        // 105,
+     0, 2, 4, 6, 8,
+     10, 12, 15, 20, 30,
+     37, 42, 48, 51, 57,
+     62, 69, 74, 80, 86,
+     93, 99, 100, 105
     };
     vector<vector<double>> Etas_bin = {
         {0., 2.4},
@@ -739,11 +735,11 @@ void HLTEffAnalyzer(
 
     // -- Event loop
     cout << "start loop" << endl;
-    for(unsigned i_ev=0; i_ev<nEvent; i_ev++) {
+    for(unsigned i_ev=0; i_ev<nEvent/10.; i_ev++) {
 
         // -- print options
         if(doBar)
-            loadBar(i_ev+1, nEvent, 100, 100);
+            loadBar(i_ev+1, nEvent/10., 100, 100);
         else if( doMem && i_ev !=0 && i_ev % nMem == 0 )
             printMemory("\t");
         else
@@ -920,8 +916,8 @@ void HLTEffAnalyzer(
                 
                 double pair_mass = invMass(i_mu, j_mu);
                 
-                if (pair_mass < 2.7) continue;
-                if (pair_mass > 3.5) continue;
+                if (pair_mass < 80) continue;
+                if (pair_mass > 100) continue;
 
                 j_mu.addVar("pair_mass", pair_mass);
 
@@ -1017,7 +1013,7 @@ void HLTEffAnalyzer(
             &L1sSingleMu7L3_MYHLT , // PPRefL3SingleMu7
             &L1sSingleMu12L3_MYHLT, // PPRefL3SingleMu12 
             &L1sSingleMu7L315_MYHLT, // PPRefL3SingleMu15    
-            &L1sSingleMu7L320_MYHLT // PPRefL3SingleMu20         
+            &L1sSingleMu7L320_MYHLT // PPRefL3SingleMu20          
         };
 
         if (L3types.size() != L3MuonColls.size()) {
@@ -1054,7 +1050,7 @@ void HLTEffAnalyzer(
                         if( !acceptance( probemu ) ) continue;
 
                         // --select eta in one bin
-                        if (Etas_bin.at(ieta).at(0) > abs(probemu.eta)) {cout <<"True1" <<endl; continue;}
+                        if (Etas_bin.at(ieta).at(0) > abs(probemu.eta)) {cout << "True1" <<endl; continue;}
                         if (Etas_bin.at(ieta).at(1) < abs(probemu.eta)) {cout << "True2" <<endl ;continue;}
 
                         iprobe++;
@@ -1174,17 +1170,17 @@ void HLTEffAnalyzer(
                         else if (
                              L3type.Contains("PPRefL1SingleMu0_Cosmics") 
                         ) { 
-                             if (nt->path_myFired("HLT_PPRefL1SingleMu0_Cosmics_v5")) matched_idx = probemu.l1matched( *L3Coll, L3map, 0.3 );
+                             if (nt->path_myFired("HLT_PPRefL1SingleMu0_Cosmics_v5")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
                         }
                         else if (
                              L3type.Contains("PPRefL1SingleMu7") 
                         ) { 
-                             if (nt->path_myFired("HLT_PPRefL1SingleMu7_v5")) matched_idx = probemu.l1matched( *L3Coll, L3map, 0.3 );
+                             if (nt->path_myFired("HLT_PPRefL1SingleMu7_v5")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
                         }
                         else if (
                              L3type.Contains("PPRefL1SingleMu12")
                         ) {
-                             if (nt->path_myFired("HLT_PPRefL1SingleMu12_v5")) matched_idx = probemu.l1matched( *L3Coll, L3map, 0.3 );
+                             if (nt->path_myFired("HLT_PPRefL1SingleMu12_v5")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
                         }
 
                         // L2 Double Mu
