@@ -415,14 +415,106 @@ void HLTEffAnalyzer(
         "L3SingleMu3_Open",
         "L3SingleMu5", 
         "L3SingleMu12"
-    };
+
+	//custom
+        "HIL1DoubleMu0_MaxDr3p5_Open",
+        "HIL1DoubleMu0_SQ_Centrality40to100",
+        "HIL1DoubleMu0_SQ_OS",
+        "HIL1DoubleMu0_SQ_SS",
+        "HIL1DoubleMu0_SQ",
+        "HIL1DoubleMu0",
+        "HIL1DoubleMuOpen_Centrality40to100",
+        "HIL1DoubleMuOpen_OS",
+        "HIL1DoubleMuOpen_SS",
+        "HIL1DoubleMuOpen",
+
+	"HIL1SingleMu0_Cosmic",
+        "HIL1SingleMu0_Open",
+        "HIL1SingleMu0_SQ_Centrality40to100",
+        "HIL1SingleMu0",
+        "HIL1SingleMu3",
+        "HIL1SingleMu5_SingleEG20Gsf",
+        "HIL1SingleMu5_SingleGEDPhoton20",
+        "HIL1SingleMu5",
+        "HIL1SingleMu7_SingleEG20Gsf",
+        "HIL1SingleMu7_SingleGEDPhoton10",
+        "HIL1SingleMu7",
+        "HIL1SingleMuOpen_SQ_Centrality40to100",
+        "HIL1SingleMu0_Centrality40to100",
+
+	"HIL2DoubleMu0_M1p5to6_Open",
+        "HIL2DoubleMu0_M7to15_Open",
+        "HIL2DoubleMu0_Open",
+        "HIL2DoubleMu0_SQ_Centrality40to100",
+        "HIL2DoubleMu0_SQ_OS",
+        "HIL2DoubleMu0_SQ_SS",
+        "HIL2DoubleMu0_SQ",
+        "HIL2DoubleMu2p8_M1p5to6_Open",
+        "HIL2DoubleMu3_M7to15_Open",
+        "HIL2DoubleMuOpen_Centrality40to100",
+        "HIL2DoubleMuOpen_OS",
+        "HIL2DoubleMuOpen_SS",
+        "HIL2SingleMu0_SQ_Centrality40to100",
+        "HIL2SingleMu12",
+        "HIL2SingleMu3_Open",
+        "HIL2SingleMu5",
+        "HIL2SingleMu7",
+        "HIL2SingleMuOpen_SQ_Centrality40to100",
+        "HIL2SingleMu0_Centrality40to100"
+};
 
     vector<TString> HLTpaths = {
         "L2SingleMu3_Open"
         "L3SingleMu3_Open",
-        "L3SingleMu5"
-        "L3SingleMu12"
-    };
+        "L3SingleMu5",
+        "L3SingleMu12",
+
+	//custom
+	"HLT_HIL1DoubleMu0_MaxDr3p5_Open_v5",
+        "HLT_HIL1DoubleMu0_SQ_Centrality40to100_v1",
+        "HLT_HIL1DoubleMu0_SQ_OS_v1",
+        "HLT_HIL1DoubleMu0_SQ_SS_v1",
+        "HLT_HIL1DoubleMu0_SQ_v5",
+        "HLT_HIL1DoubleMu0_v5",
+        "HLT_HIL1DoubleMuOpen_Centrality40to100_v1",
+        "HLT_HIL1DoubleMuOpen_OS_v1",
+        "HLT_HIL1DoubleMuOpen_SS_v1",
+        "HLT_HIL1DoubleMuOpen_v1",
+
+        "HLT_HIL1SingleMu0_Cosmic_v5",
+        "HLT_HIL1SingleMu0_Open_v5",
+        "HLT_HIL1SingleMu0_SQ_Centrality40to100_v1",
+        "HLT_HIL1SingleMu0_v5",
+        "HLT_HIL1SingleMu3_v1",
+        "HLT_HIL1SingleMu5_SingleEG20Gsf_v5",
+        "HLT_HIL1SingleMu5_SingleGEDPhoton20_v5",
+        "HLT_HIL1SingleMu5_v1",
+        "HLT_HIL1SingleMu7_SingleEG20Gsf_v5",
+        "HLT_HIL1SingleMu7_SingleGEDPhoton10_v5",
+        "HLT_HIL1SingleMu7_v1",
+        "HLT_HIL1SingleMuOpen_SQ_Centrality40to100_v1",
+        "HLT_HIL1SingleMu0_Centrality40to100_v1",
+
+	"HLT_HIL2DoubleMu0_M1p5to6_Open_v5",
+        "HLT_HIL2DoubleMu0_M7to15_Open_v5",
+        "HLT_HIL2DoubleMu0_Open_v5",
+        "HLT_HIL2DoubleMu0_SQ_Centrality40to100_v1",
+        "HLT_HIL2DoubleMu0_SQ_OS_v1",
+        "HLT_HIL2DoubleMu0_SQ_SS_v1",
+        "HLT_HIL2DoubleMu0_SQ_v1",
+        "HLT_HIL2DoubleMu2p8_M1p5to6_Open_v5",
+        "HLT_HIL2DoubleMu3_M7to15_Open_v5",
+        "HLT_HIL2DoubleMuOpen_Centrality40to100_v1",
+        "HLT_HIL2DoubleMuOpen_OS_v1",
+        "HLT_HIL2DoubleMuOpen_SS_v1",
+        "HLT_HIL2SingleMu0_SQ_Centrality40to100_v1",
+        "HLT_HIL2SingleMu12_v1",
+        "HLT_HIL2SingleMu3_Open_v5",
+        "HLT_HIL2SingleMu5_v5",
+        "HLT_HIL2SingleMu7_v5",
+        "HLT_HIL2SingleMuOpen_SQ_Centrality40to100_v1",
+        "HLT_HIL2SingleMu0_Centrality40to100_v1"
+};
 
         // -- a part of the filter names and HLT paths in PbPb HLT menu
         // (Using the script (PrintObject.cxx) in the Ntupler directory, we can extract the fired filter names in the ntuple)
@@ -759,8 +851,54 @@ void HLTEffAnalyzer(
         vector<Object> IterL3SingleMuOpen_MYHLT = nt->get_myHLTObjects("hltL1fForIterL3L1fL1sSingleMuOpenL1Filtered0");
         vector<Object> IterL3SingleMu3_MYHLT = nt->get_myHLTObjects("hltL1fForIterL3L1fL1sSingleMu3L1Filtered0"); 
         vector<Object> L1sSingleMu7_MYHLT = nt->get_myHLTObjects("hltL1fL1sSingleMu7L1Filtered0");
+	//custom
+	 vector<Object> HIL1DoubleMu0MaxDr3p5Open_MYHLT = nt->get_myHLTObjects("hltL1sDoubleMuOpenMaxDr3p5BptxAND");
+        vector<Object> HIL1DoubleMu0SQCentrality40to100_MYHLT = nt->get_myHLTObjects("hltL1fL1sDoubleMu0SQCent40to100L1Filtered0");
+        vector<Object> HIL1DoubleMu0SQOS_MYHLT = nt->get_myHLTObjects("hltL1fL1sDoubleMu0SQOSL1Filtered0");
+        vector<Object> HIL1DoubleMu0SQSS_MYHLT = nt->get_myHLTObjects("hltL1fL1sDoubleMuSQSSL1Filtered0");
+        vector<Object> HIL1DoubleMu0SQ_MYHLT = nt->get_myHLTObjects("hltL1fL1sDoubleMuSQL1Filtered0");
+        vector<Object> HIL1DoubleMu0_MYHLT = nt->get_myHLTObjects("hltL1fL1sDoubleMu0L1Filtered0");
+        vector<Object> HIL1DoubleMuOpenCentrality40to100_MYHLT = nt->get_myHLTObjects("hltL1fL1sDoubleMuOpenCent40to100L1Filtered0");
+        vector<Object> HIL1DoubleMuOpenOS_MYHLT = nt->get_myHLTObjects("hltL1fL1sDoubleMuOpenOSL1Filtered0");
+        vector<Object> HIL1DoubleMuOpenSS_MYHLT = nt->get_myHLTObjects("hltL1fL1sDoubleMuOpenSSL1Filtered0");
+        vector<Object> HIL1DoubleMuOpen_MYHLT = nt->get_myHLTObjects("hltL1fL1sDoubleMuOpenL1Filtered0");
 
-        // -- TnP selection
+	vector<Object> HIL1SingleMu0Cosmic_MYHLT = nt->get_myHLTObjects("hltL1fL1sSingleMuCosmicL1Filtered0");
+        vector<Object> HIL1SingleMu0Open_MYHLT = nt->get_myHLTObjects("hltL1fL1sSingleMuOpenL1Filtered0");
+        vector<Object> HIL1SingleMu0SQCentrality40to100_MYHLT = nt->get_myHLTObjects("hltL1fL1sSingleMuSQCent40to100L1Filtered0");
+        vector<Object> HIL1SingleMu0_MYHLT = nt->get_myHLTObjects("hltL1fL1sSingleMu0L1Filtered0");
+        vector<Object> HIL1SingleMu3_MYHLT = nt->get_myHLTObjects("hltL1fL1sSingleMu3L1Filtered0");
+        vector<Object> HIL1SingleMu5SingleEG20Gsf_MYHLT = nt->get_myHLTObjects("hltL1fL1sSingleMu3SingleEG12L1Filtered5");
+        vector<Object> HIL1SingleMu5SingleGEDPhoton20_MYHLT = nt->get_myHLTObjects("hltL1fL1sSingleMu3SingleEG12L1Filtered5");
+        vector<Object> HIL1SingleMu5_MYHLT = nt->get_myHLTObjects("hltL1fL1sSingleMu5L1Filtered0");
+        vector<Object> HIL1SingleMu7SingleEG20Gsf_MYHLT = nt->get_myHLTObjects("hltL1fL1sSingleMu5SingleEG15L1Filtered7");
+        vector<Object> HIL1SingleMu7SingleGEDPhoton10_MYHLT = nt->get_myHLTObjects("hltL1fL1sSingleMu7SingleEG10L1Filtered0");
+        vector<Object> HIL1SingleMu7_MYHLT = nt->get_myHLTObjects("hltL1fL1sSingleMu7L1Filtered0");
+        vector<Object> HIL1SingleMuOpenSQCentrality40to100_MYHLT = nt->get_myHLTObjects("hltL1fL1sSingleMuOpenSQCent40to100L1Filtered0");
+        vector<Object> HIL1SingleMu0Centrality40to100_MYHLT = nt->get_myHLTObjects("hltL1fL1sSingleMu0Cent40to100L1Filtered0");
+
+	vector<Object> HIL2DoubleMu0M1p5to6Open_MYHLT = nt->get_myHLTObjects("hltL2DoubleMuOpenMassFiltered1p5to6");
+        vector<Object> HIL2DoubleMu0M7to15Open_MYHLT = nt->get_myHLTObjects("hltL2DoubleMuOpenMassFiltered7to15");
+        vector<Object> HIL2DoubleMu0Open_MYHLT = nt->get_myHLTObjects("hltL2fL1fL1sDoubleMuOpenL2Filtered0");
+        vector<Object> HIL2DoubleMu0SQCentrality40to100_MYHLT = nt->get_myHLTObjects("hltL2fL1fL1sDoubleMu0SQCent40to100L2Filtered0");
+        vector<Object> HIL2DoubleMu0SQOS_MYHLT = nt->get_myHLTObjects("hltL2fL1fL1sDoubleMu0SQOSL2Filtered0");
+        vector<Object> HIL2DoubleMu0SQSS_MYHLT = nt->get_myHLTObjects("hltL2fL1fL1sDoubleMuSQSSL2Filtered0");
+        vector<Object> HIL2DoubleMu0SQ_MYHLT = nt->get_myHLTObjects("hltL2fL1fL1sDoubleMuSQL2Filtered0");
+        vector<Object> HIL2DoubleMu2p8M1p5to6Open_MYHLT = nt->get_myHLTObjects("hltL2DoubleMuOpen2p8MassFiltered1p5to6");
+        vector<Object> HIL2DoubleMu3M7to15Open_MYHLT = nt->get_myHLTObjects("hltL2DoubleMuOpen3MassFiltered7to15");
+        vector<Object> HIL2DoubleMuOpenCentrality40to100_MYHLT = nt->get_myHLTObjects("hltL2fL1fL1sDoubleMuOpenCent40to100L2Filtered0");
+        vector<Object> HIL2DoubleMuOpenOS_MYHLT = nt->get_myHLTObjects("hltL2fL1fL1sDoubleMuOpenOSL2Filtered0");
+        vector<Object> HIL2DoubleMuOpenSS_MYHLT = nt->get_myHLTObjects("hltL2fL1fL1sDoubleMuOpenSSL2Filtered0");
+
+        vector<Object> HIL2SingleMu0SQCentrality40to100_MYHLT = nt->get_myHLTObjects("hltL2fL1fL1sSingleMuSQCent40to100L2Filtered0");
+        vector<Object> HIL2SingleMu12_MYHLT = nt->get_myHLTObjects("hltL2fL1fL1sSingleMu7L2Filtered7");
+        vector<Object> HIL2SingleMu3Open_MYHLT = nt->get_myHLTObjects("hltL2fL1fL1sSingleMuOpenL2Filtered3");
+        vector<Object> HIL2SingleMu5_MYHLT = nt->get_myHLTObjects("hltL2fL1fL1sSingleMu3L2Filtered5");
+        vector<Object> HIL2SingleMu7_MYHLT = nt->get_myHLTObjects("hltL2fL1fL1sSingleMu5L2Filtered7");
+        vector<Object> HIL2SingleMuOpenSQCentrality40to100_MYHLT = nt->get_myHLTObjects("hltL2fL1fL1sSingleMuOpenSQCent40to100L2Filtered0");
+        vector<Object> HIL2SingleMu0Centrality40to100_MYHLT = nt->get_myHLTObjects("hltL2fL1fL1sSingleMu0Cent40to100L2Filtered0");
+        
+	// -- TnP selection
         vector<Object> muons = nt->get_offlineMuons(); //get muons' information (in the Ntuple, muon_* )
         vector<Object> probes = {};        
         // tag
@@ -820,7 +958,54 @@ void HLTEffAnalyzer(
         // -- paths (match one of the filter names that the path contains)       
             &IterL3SingleMuOpen_MYHLT,  
             &IterL3SingleMu3_MYHLT, 
-            &L1sSingleMu7_MYHLT 
+            &L1sSingleMu7_MYHLT,
+
+	//custom the name should be no "_" inside
+            &HIL1DoubleMu0MaxDr3p5Open_MYHLT, //HIL1DoubleMu0_MaxDr3p5_Open
+            &HIL1DoubleMu0SQCentrality40to100_MYHLT, //HIL1DoubleMu0_SQ_Centrality40to100
+            &HIL1DoubleMu0SQOS_MYHLT, //HIL1DoubleMu0_SQ_OS
+            &HIL1DoubleMu0SQSS_MYHLT, //HIL1DoubleMu0_SQ_SS
+            &HIL1DoubleMu0SQ_MYHLT, //HIL1DoubleMu0_SQ
+            &HIL1DoubleMu0_MYHLT, //HIL1DoubleMu0
+            &HIL1DoubleMuOpenCentrality40to100_MYHLT, //HIL1DoubleMuOpen_Centrality40to100
+            &HIL1DoubleMuOpenOS_MYHLT, //HIL1DoubleMuOpen_OS
+            &HIL1DoubleMuOpenSS_MYHLT, //HIL1DoubleMuOpen_SS
+            &HIL1DoubleMuOpen_MYHLT, //HIL1DoubleMuOpen
+
+            &HIL1SingleMu0Cosmic_MYHLT, //HIL1SingleMu0_Cosmic
+            &HIL1SingleMu0Open_MYHLT, //HIL1SingleMu0_Open
+            &HIL1SingleMu0SQCentrality40to100_MYHLT, //HIL1SingleMu0_SQ_Centrality40to100
+            &HIL1SingleMu0_MYHLT, //HIL1SingleMu0
+            &HIL1SingleMu3_MYHLT, //HIL1SingleMu3
+            &HIL1SingleMu5SingleEG20Gsf_MYHLT, //HIL1SingleMu5_SingleEG20Gsf
+            &HIL1SingleMu5SingleGEDPhoton20_MYHLT, //HIL1SingleMu5_SingleGEDPhoton20
+            &HIL1SingleMu5_MYHLT, //HIL1SingleMu5
+            &HIL1SingleMu7SingleEG20Gsf_MYHLT, //HIL1SingleMu7_SingleEG20Gsf
+            &HIL1SingleMu7SingleGEDPhoton10_MYHLT, //HIL1SingleMu7_SingleGEDPhoton10
+            &HIL1SingleMu7_MYHLT, //HIL1SingleMu7
+            &HIL1SingleMuOpenSQCentrality40to100_MYHLT, //HIL1SingleMuOpen_SQ_Centrality40to100
+            &HIL1SingleMu0Centrality40to100_MYHLT, //HIL1SingleMu0_Centrality40to100
+
+            &HIL2DoubleMu0M1p5to6Open_MYHLT, //HIL2DoubleMu0_M1p5to6_Open
+            &HIL2DoubleMu0M7to15Open_MYHLT, //HIL2DoubleMu0_M7to15_Open
+            &HIL2DoubleMu0Open_MYHLT, //HIL2DoubleMu0
+            &HIL2DoubleMu0SQCentrality40to100_MYHLT, //HIL2DoubleMu0_SQ_Centrality40to100
+            &HIL2DoubleMu0SQOS_MYHLT, //HIL2DoubleMu0_SQ_OS
+            &HIL2DoubleMu0SQSS_MYHLT, //HIL2DoubleMu0_SQ_SS
+            &HIL2DoubleMu0SQ_MYHLT, //HIL2DoubleMu0_SQ
+            &HIL2DoubleMu2p8M1p5to6Open_MYHLT, //HIL2DoubleMu2p8_M1p5to6_Open
+            &HIL2DoubleMu3M7to15Open_MYHLT, //HIL2DoubleMu3_M7to15_Open
+            &HIL2DoubleMuOpenCentrality40to100_MYHLT, //HIL2DoubleMuOpen_Centrality40to100
+            &HIL2DoubleMuOpenOS_MYHLT, //HIL2DoubleMuOpen_OS
+            &HIL2DoubleMuOpenSS_MYHLT, //HIL2DoubleMuOpen_SS
+
+            &HIL2SingleMu0SQCentrality40to100_MYHLT, //HIL2SingleMu0_SQ_Centrality40to100
+            &HIL2SingleMu12_MYHLT, //HIL2SingleMu12
+            &HIL2SingleMu3Open_MYHLT, //HIL2SingleMu3_Open
+            &HIL2SingleMu5_MYHLT, //HIL2SingleMu5
+            &HIL2SingleMu7_MYHLT, //HIL2SingleMu7
+            &HIL2SingleMuOpenSQCentrality40to100_MYHLT, //HIL2SingleMuOpen_SQ_Centrality40to100
+            &HIL2SingleMu0Centrality40to100_MYHLT //HIL2SingleMu0_Centrality40to100
         };
 
         if (L3types.size() != L3MuonColls.size()) {
@@ -970,6 +1155,217 @@ void HLTEffAnalyzer(
                         ) {
                           if (nt->path_myFired("HLT_HIL3SingleMu12_v3")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
                         }
+			//custom
+                        else if (
+                             L3type.Contains("HIL1DoubleMu0_MaxDr3p5_Open")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL1DoubleMu0_MaxDr3p5_Open_v5")) matched_idx = probemu.L1matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("HIL1DoubleMu0_SQ_Centrality40to100")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL1DoubleMu0_SQ_Centrality40to100_v1")) matched_idx = probemu.L1matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("HIL1DoubleMu0_SQ_OS")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL1DoubleMu0_SQ_OS_v1")) matched_idx = probemu.L1matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("HIL1DoubleMu0_SQ_SS")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL1DoubleMu0_SQ_SS_v1")) matched_idx = probemu.L1matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("HIL1DoubleMu0_SQ")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL1DoubleMu0_SQ_v5")) matched_idx = probemu.L1matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("HIL1DoubleMu0")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL1DoubleMu0_v5")) matched_idx = probemu.L1matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("HIL1DoubleMuOpen_Centrality40to100")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL1DoubleMuOpen_Centrality40to100_v1")) matched_idx = probemu.L1matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("HIL1DoubleMuOpen_OS")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL1DoubleMuOpen_OS_v1")) matched_idx = probemu.L1matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("HIL1DoubleMuOpen_SS")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL1DoubleMuOpen_SS_v1")) matched_idx = probemu.L1matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("HIL1DoubleMuOpen")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL1DoubleMuOpen_v1")) matched_idx = probemu.L1matched( *L3Coll, L3map, 0.3 );
+                        }
+
+                        else if (
+                             L3type.Contains("HIL1SingleMu0_Cosmic")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL1SingleMu0_Cosmic_v5")) matched_idx = probemu.L1matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("HIL1SingleMu0_Open")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL1SingleMu0_Open_v5")) matched_idx = probemu.L1matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("HIL1SingleMu0_SQ_Centrality40to100")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL1SingleMu0_SQ_Centrality40to100_v1")) matched_idx = probemu.L1matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("HIL2SingleMu0_Centrality40to100")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL2SingleMu0_Centrality40to100_v1")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );                         }
+                        else if (
+                             L3type.Contains("HIL1SingleMu0")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL1SingleMu0_v5")) matched_idx = probemu.L1matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("HIL1SingleMu3")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL1SingleMu3_v1")) matched_idx = probemu.L1matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("HIL1SingleMu5_SingleEG20Gsf")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL1SingleMu5_SingleEG20Gsf_v5")) matched_idx = probemu.L1matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("HIL1SingleMu5_SingleGEDPhoton20")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL1SingleMu5_SingleGEDPhoton20_v5")) matched_idx = probemu.L1matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("HIL1SingleMu5")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL1SingleMu5_v1")) matched_idx = probemu.L1matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("HIL1SingleMu7_SingleEG20Gsf")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL1SingleMu7_SingleEG20Gsf_v5")) matched_idx = probemu.L1matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("HIL1SingleMu7_SingleGEDPhoton10")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL1SingleMu7_SingleGEDPhoton10_v5")) matched_idx = probemu.L1matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("HIL1SingleMu7")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL1SingleMu7_v1")) matched_idx = probemu.L1matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("HIL1SingleMuOpen_SQ_Centrality40to100")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL1SingleMuOpen_SQ_Centrality40to100_v1")) matched_idx = probemu.L1matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("HIL2DoubleMu0_M1p5to6_Open")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL2DoubleMu0_M1p5to6_Open_v5")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
+                        }else if (
+                             L3type.Contains("HIL2DoubleMu0_M7to15_Open")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL2DoubleMu0_M7to15_Open_v5")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("HIL2DoubleMu0_Open")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL2DoubleMu0_Open_v5")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("HIL2DoubleMu0_SQ_Centrality40to100")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL2DoubleMu0_SQ_Centrality40to100_v1")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("HIL2DoubleMu0_SQ_OS")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL2DoubleMu0_SQ_OS_v1")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("HIL2DoubleMu0_SQ_SS")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL2DoubleMu0_SQ_SS_v1")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("HIL2DoubleMu0_SQ")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL2DoubleMu0_SQ_v1")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("HIL2DoubleMu2p8_M1p5to6_Open")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL2DoubleMu2p8_M1p5to6_Open_v5")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("HIL2DoubleMu3_M7to15_Open")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL2DoubleMu3_M7to15_Open_v5")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("HIL2DoubleMuOpen_Centrality40to100")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL2DoubleMuOpen_Centrality40to100_v1")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("HIL2DoubleMuOpen_OS")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL2DoubleMuOpen_OS_v1")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("HIL2DoubleMuOpen_SS")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL2DoubleMuOpen_SS_v1")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
+                        }
+
+                        else if (
+                             L3type.Contains("HIL2SingleMu0_SQ_Centrality40to100")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL2SingleMu0_SQ_Centrality40to100_v1")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("HIL2SingleMu12")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL2SingleMu12_v1")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("HIL2SingleMu3_Open")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL2SingleMu3_Open_v5")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("HIL2SingleMu5")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL2SingleMu5_v5")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("HIL2SingleMu7")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL2SingleMu7_v5")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("HIL2SingleMuOpen_SQ_Centrality40to100")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL2SingleMuOpen_SQ_Centrality40to100_v1")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );
+                        }
+                        else if (
+                             L3type.Contains("HIL2SingleMu0_Centrality40to100")
+                        ) {
+                          if (nt->path_myFired("HLT_HIL2SingleMu0_Centrality40to100_v1")) matched_idx = probemu.matched( *L3Coll, L3map, 0.3 );                         
+			}
                         else {
                             matched_idx = looseMatch ? probemu.matched( *L3Coll, L3map, 0.3 ) :  // L2 muon
                                                        probemu.matched( *L3Coll, L3map, 0.1, 0.5 );  // IO tracks

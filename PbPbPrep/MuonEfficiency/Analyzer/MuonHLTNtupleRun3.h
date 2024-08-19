@@ -183,6 +183,34 @@ public:
       return ( (dR < dR_match) && (dpt < dpt_match) );
     }
 
+    int L1matched( vector<Object>& objects, vector<int>& map, double dR_match = 0.1, double dpt_match = 1.e9 ) {//custom deft 0,1
+      bool found     = false;
+      double the_dR  = dR_match;
+      int the_i = -1e9;
+
+      unsigned n = objects.size();
+      for(unsigned i=0; i<n; ++i) {
+        if( map[i] > 0 )  continue;
+
+        double dR  = deltaR( objects.at(i) );
+        //custom
+        //double dR  = this->getvec("l1tdr").at(i);
+        double dpt = fabs( this->pt - objects.at(i).pt ) / this->pt;
+        if(  dpt < dpt_match ) {
+        //if( (dR < the_dR) && (dpt < dpt_match) ) {
+          found = true;
+          the_dR = dR;
+          the_i = i;
+        }
+      }
+
+      if(found) {
+        map[the_i] = 1;
+      }
+
+      return the_i;
+    }
+
     int matched( vector<Object>& objects, vector<int>& map, double dR_match = 0.1, double dpt_match = 1.e9 ) {
       bool found     = false;
       double the_dR  = dR_match;
